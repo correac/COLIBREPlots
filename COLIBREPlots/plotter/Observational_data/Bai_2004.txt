@@ -1,0 +1,13 @@
+# 10 metal-poor halo stars
+# Solar abundances are taken fro Grevesse & Sauval 98, O = 8.83
+# name - Fe/H - O/Fe
+HD108177	-1.69	0.65
+HD149414	-1.51	0.69
+BD023375	-2.25	0.59
+BD203603	-2.09	0.66
+BD262606	-2.27	0.68
+BD282137	-1.93	0.56
+BD292091	-1.96	0.56
+BD342476	-1.94	0.60
+BD422667	-1.45	0.61
+BD511696	-1.48	0.53

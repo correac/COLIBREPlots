@@ -1,0 +1,40 @@
+#Title: Abundances in the early Galaxy (Cayrel+, 2004)
+#Table J_A_A_416_1117_table8:
+#Name: J/A+A/416/1117/table8
+#Title: *Abundances of the elements from C to Zn for the 35 stars
+#---Details of Columns:
+    Seq             (I2)    Sequential number of the star [ucd=meta.id]
+    Name            (a12)   Name of the star [ucd=meta.id;meta.main]
+    [Fe/H] ([Sun])  (F5.2)  Adopted metallicity [ucd=phys.abund.Fe]
+    Element         (a7)    Name of the species [ucd=phys.atmol.element]
+    logeps          (F5.2)  ? logarithm of the number of atoms of the element for 10^12 hydrogen atoms [ucd=phys.abund]
+    l_[M/H]         (A1)    Limit flag on [M/H] [ucd=meta.code.error]
+    [M/H] ([Sun])   (F5.2)  ? log(ratio relative to the solar ratio) [ucd=phys.abund]
+    l_[M/Fe]        (A1)    Limit flag on [M/Fe] [ucd=meta.code.error]
+    [M/Fe] ([Sun])  (F5.2)  ? log(ratio relative to the solar ratio) [ucd=phys.abund]
+    e_[M/H] ([Sun]) (F5.2)  ? Standard deviation for [M/H] and [M/Fe] [ucd=stat.error]
+    Nlines          (I3)    ? Number of lines [NULL integer written as an empty string] [ucd=meta.number]
+# Solar abundances O = 8.74 
+-- ------------ ----- ------- ----- - ----- - ----- ----- ---
+ 1 HD2796      -2.47 O        6.80   -1.97    0.50       
+ 2 HD122563    -2.82 O        6.57   -2.20    0.62       
+ 3 HD186478    -2.59 O        6.93   -1.84    0.75       
+ 4 BD+173248   -2.07 O        7.39   -1.38    0.69       
+ 5 BD-185550   -3.06 O        6.13   -2.64    0.42                                 
+11 CS22172-002 -3.86 O        5.95   -2.82    1.04       
+12 CS22186-025 -3.00 O        6.36   -2.41    0.59       
+14 CS22873-055 -2.99 O        6.30   -2.47    0.52       
+18 CS22891-209 -3.29 O        6.25   -2.52    0.77       
+19 CS22892-052 -3.03 O        6.21   -2.56    0.47       
+20 CS22896-154 -2.69 O        7.02   -1.75    0.94       
+22 CS22948-066 -3.14 O        6.52   -2.25    0.89       
+23 CS22949-037 -3.97 O        6.78   -1.99    1.98       
+25 CS22953-003 -2.84 O        6.68   -2.09    0.75       
+27 CS22966-057 -2.62 O        7.14   -1.63    0.99       
+28 CS22968-014 -3.56 O        6.11   -2.66    0.90       
+29 CS29491-053 -3.04 O        6.49   -2.28    0.76       
+30 CS29495-041 -2.82 O        6.63   -2.14    0.68       
+32 CS29516-024 -3.06 O        6.33   -2.44    0.62       
+33 CS29518-051 -2.69 O        7.01   -1.76    0.93       
+34 CS30325-094 -3.30 O        6.19   -2.58    0.72       
+35 CS31082-001 -2.91 O        6.46   -2.31    0.60       
