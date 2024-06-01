@@ -81,9 +81,10 @@ def total_metal_evolution(ax, file_path, snap):
 if __name__ == "__main__":
 
     initial_snap = 0
-    for i in range(initial_snap, 18):
+    for i in range(initial_snap, 30):
 
-        file_path = "/Users/cc276407/Simulation_data/cosma/IsolatedGalaxy/IsolatedGalaxy_randomZ/"
+        #file_path = "/Users/cc276407/Simulation_data/cosma/IsolatedGalaxy/IsolatedGalaxy_randomZ/"
+        file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_randomZ/"
         filename = "output_00%02d.hdf5" % i
 
         # Plot parameters
@@ -136,7 +137,8 @@ if __name__ == "__main__":
 
         #####
         ax0 = plt.subplot(3, 3, 7)
-        file_path = "/Users/cc276407/Simulation_data/cosma/IsolatedGalaxy/IsolatedGalaxy_halfbox/"
+        #file_path = "/Users/cc276407/Simulation_data/cosma/IsolatedGalaxy/IsolatedGalaxy_halfbox/"
+        file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ/"
         total_metal_evolution(ax0, file_path, i)
 
         #####
