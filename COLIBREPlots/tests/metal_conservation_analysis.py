@@ -61,10 +61,10 @@ def total_metal_evolution(ax, file_path, snap):
         Z_track = np.zeros(snap)
         time_track = np.zeros(snap)
         for i in range(0, snap):
-            filename = "output_00%02d.hdf5" % i
+            filename = "output_0%003d.hdf5" % i
             Z_all, time, _, _, _ = read_data(file_path, filename)
             Z_track[i] = Z_all
-            time_track[i] = time
+            time_track[i] = time / 1e3
 
         Delta_Z = (Z_track - Z_track[0]) / Z_track[0]
 
@@ -73,20 +73,20 @@ def total_metal_evolution(ax, file_path, snap):
         Delta_Z = np.zeros(1)
 
     ax.plot(time_track, Delta_Z / 1e-5, '-o', color='darkblue')
-    ax.set_xlabel("Time [Myr]", labelpad=0)
+    ax.set_xlabel("Time [Gyr]", labelpad=0)
     ax.set_ylabel(r"$(Z-Z(t=0))/Z(t=0)$ [$\times 10^{-5}$]", labelpad=0)
-    ax.set_xlim(0,500)
+    ax.set_xlim(0,2)
 
 
 if __name__ == "__main__":
 
     initial_snap = 0
-    for i in range(initial_snap, 30):
+    for i in range(initial_snap, 150):
 
         #file_path = "/Users/cc276407/Simulation_data/cosma/IsolatedGalaxy/IsolatedGalaxy_randomZ/"
         #file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_randomZ/"
         file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ_nocooling/"
-        filename = "output_00%02d.hdf5" % i
+        filename = "output_0%003d.hdf5" % i
 
         # Plot parameters
         params = {
@@ -139,20 +139,20 @@ if __name__ == "__main__":
         #####
         ax0 = plt.subplot(3, 3, 7)
         #file_path = "/Users/cc276407/Simulation_data/cosma/IsolatedGalaxy/IsolatedGalaxy_halfbox/"
-        file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ/"
-        total_metal_evolution(ax0, file_path, i)
+        #file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ/"
+        #total_metal_evolution(ax0, file_path, i)
 
         #####
         ax1 = plt.subplot(3, 3, 8)
-        _ = metallicity_distribution_plot(ax1, file_path, "output_0000.hdf5")
+        #_ = metallicity_distribution_plot(ax1, file_path, "output_0000.hdf5")
 
         #####
         ax2 = plt.subplot(3, 3, 9)
-        im = metallicity_distribution_plot(ax2, file_path, filename)
+        #im = metallicity_distribution_plot(ax2, file_path, filename)
 
-        axlist = [ax0, ax1, ax2]
-        cbar = fig.colorbar(im, ax=axlist, label='$Z/Z_{\odot}$', fraction=0.05, pad=0.03, extend='min')
-        cbar.ax.set_yticks([0.8,1,1.2])
+        #axlist = [ax0, ax1, ax2]
+        #cbar = fig.colorbar(im, ax=axlist, label='$Z/Z_{\odot}$', fraction=0.05, pad=0.03, extend='min')
+        #cbar.ax.set_yticks([0.8,1,1.2])
 
-        plt.savefig("metal_conservation_snap_00%02d.png"%i, dpi=300)
+        plt.savefig("metal_conservation_snap_0%003d.png"%i, dpi=300)
 
