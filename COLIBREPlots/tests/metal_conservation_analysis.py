@@ -1,9 +1,16 @@
 import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.colors as colors
 from pylab import rcParams
 import numpy as np
 import h5py
 from galaxy_visualization_plot import stars_light_map_face_on, gas_map_face_on, stars_light_map_edge_on
+
+def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
+    new_cmap = colors.LinearSegmentedColormap.from_list(
+        'trunc({n},{a:.2f},{b:.2f})'.format(n=cmap.name, a=minval, b=maxval),
+        cmap(np.linspace(minval, maxval, n)))
+    return new_cmap
 
 def read_data(file_path, filename):
 
@@ -39,18 +46,16 @@ def metallicity_distribution_plot(ax, file_path, filename):
     Z_all, time, x_pos, y_pos, Z = read_data(file_path, filename)
 
     cmap = plt.cm.twilight
+    new_cmap = truncate_colormap(cmap, 0.0, 0.8)
+
     normalize = matplotlib.colors.TwoSlopeNorm(vmin=0.8, vcenter=1, vmax=1.2)
-    im = ax.scatter(x_pos, y_pos, s=1, c=Z, cmap=cmap, edgecolors=None, norm=normalize)
+    im = ax.scatter(x_pos, y_pos, s=1, c=Z, cmap=new_cmap, edgecolors=None, norm=normalize)
 
     ax.axis([-30, 30, -30, 30])
     ax.set_xlabel("x [kpc]", labelpad=0)
     ax.set_ylabel("y [kpc]", labelpad=0)
     ax.text(0.1, 0.05, 'Gas', horizontalalignment='center', verticalalignment='center',
             transform=ax.transAxes, color='black')
-
-    # cbar = plt.colorbar(im, label='$Z/Z_{\odot}$', fraction=0.05, pad=0.03, extend='min')
-    # cbar.ax.set_yticks([0.8,1,1.2])
-
 
     return im
 
@@ -81,11 +86,11 @@ def total_metal_evolution(ax, file_path, snap):
 if __name__ == "__main__":
 
     initial_snap = 0
-    for i in range(initial_snap, 150):
+    for i in range(initial_snap, 1):
 
-        #file_path = "/Users/cc276407/Simulation_data/cosma/IsolatedGalaxy/IsolatedGalaxy_randomZ/"
+        file_path = "/Users/cc276407/Simulation_data/cosma/IsolatedGalaxy/IsolatedGalaxy_randomZ/"
         #file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_randomZ/"
-        file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ_nocooling/"
+        # file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ_nocooling/"
         filename = "output_0%003d.hdf5" % i
 
         # Plot parameters
@@ -119,7 +124,7 @@ if __name__ == "__main__":
         im = gas_map_face_on(ax2, file_path, filename)
         axlist = [ax0, ax1, ax2]
         cbar = fig.colorbar(im, ax=axlist, label='Gas Density [M$_{\odot}$ kpc$^{-3}$]', fraction=0.05, pad=0.03, extend='min')
-        # cbar.ax.set_yticks([0.8, 1, 1.2])
+        cbar.ax.set_yticks([4, 6, 8, 10])
 
         #####
         ax0 = plt.subplot(3, 3, 4)

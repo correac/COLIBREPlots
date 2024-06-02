@@ -196,11 +196,11 @@ def gas_map_face_on(ax, file_path, filename):
     pos_x = model.gas.coordinates[arg_sort,0] - model.metadata.boxsize[0] * 0.5
     pos_y = model.gas.coordinates[arg_sort,1] - model.metadata.boxsize[0] * 0.5
 
-    denmin = np.min(density)
-    denmax = np.max(density)
-    print(denmin, denmax)
+    # denmin = np.min(density)
+    # denmax = np.max(density)
+    # print(denmin, denmax)
 
-    im = plt.scatter(pos_x, pos_y, c=density, s=10, vmin=denmin, vmax=denmax, cmap="magma", edgecolors="none",)
+    im = plt.scatter(pos_x, pos_y, c=density, s=10, vmin=4, vmax=10, cmap="magma", edgecolors="none",)
 
     ax.tick_params(labelleft=False, labelbottom=False)
     ax.set_xlim(-30, 30)

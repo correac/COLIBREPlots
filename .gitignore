@@ -12,6 +12,8 @@ dist/*
 *.pdf
 *.mp4
 *.hdf5
+*.png
+*.gif
 index.html
 plots/
 
