@@ -77,7 +77,7 @@ def total_metal_evolution(ax, file_path, snap):
         time_track = np.zeros(1)
         Delta_Z = np.zeros(1)
 
-    ax.plot(time_track, Delta_Z / 1e-5, '-o', color='darkblue')
+    ax.plot(time_track, Delta_Z / 1e-5, '-o',lw=1, color='darkblue')
     ax.set_xlabel("Time [Gyr]", labelpad=0)
     ax.set_ylabel(r"$(Z-Z(t=0))/Z(t=0)$ [$\times 10^{-5}$]", labelpad=0)
     ax.set_xlim(0,2)
@@ -86,11 +86,11 @@ def total_metal_evolution(ax, file_path, snap):
 if __name__ == "__main__":
 
     initial_snap = 0
-    for i in range(initial_snap, 1):
+    for i in range(initial_snap, 150):
 
-        file_path = "/Users/cc276407/Simulation_data/cosma/IsolatedGalaxy/IsolatedGalaxy_randomZ/"
-        #file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_randomZ/"
-        # file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ_nocooling/"
+        # file_path = "/Users/cc276407/Simulation_data/cosma/IsolatedGalaxy/IsolatedGalaxy_randomZ/"
+        # file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_randomZ/"
+        file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ_nocooling/"
         filename = "output_0%003d.hdf5" % i
 
         # Plot parameters
