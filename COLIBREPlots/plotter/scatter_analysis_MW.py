@@ -6,7 +6,6 @@ from matplotlib.pylab import rcParams
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import numpy as np
 from tqdm import tqdm
-import h5py
 import scipy.stats as stat
 from simulation.simulation_data import read_simulation
 from simulation import particle_data

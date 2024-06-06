@@ -57,3 +57,4 @@ N_over_Fe_Grevesse07 = N_over_H_Grevesse07 - Fe_over_H_Grevesse07
 Si_over_Fe_Grevesse07 = Si_over_H_Grevesse07 - Fe_over_H_Grevesse07
 N_over_O_Grevesse07 = N_over_H_Grevesse07 - O_over_H_Grevesse07
 C_over_O_Grevesse07 = C_over_H_Grevesse07 - O_over_H_Grevesse07
+kroupa_to_chabrier_mass = 0.912

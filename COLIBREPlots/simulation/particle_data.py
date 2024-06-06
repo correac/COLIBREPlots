@@ -194,7 +194,15 @@ class load_star_particle_data:
         self.silicon_mass_from_snii = data.stars.element_mass_fractions_from_snii[:, 7].value * data.stars.masses.to("Msun").value
         self.iron_mass_from_snii = data.stars.element_mass_fractions_from_snii[:, 8].value * data.stars.masses.to("Msun").value
 
-        self.iron_mass_from_snia = data.stars.iron_mass_fractions_from_snia.value * data.stars.masses.to("Msun").value
+        self.hydrogen_mass_from_snia = data.stars.element_mass_fractions_from_snia[:, 0].value * data.stars.masses.to("Msun").value
+        self.helium_mass_from_snia = data.stars.element_mass_fractions_from_snia[:, 1].value * data.stars.masses.to("Msun").value
+        self.carbon_mass_from_snia = data.stars.element_mass_fractions_from_snia[:, 2].value * data.stars.masses.to("Msun").value
+        self.nitrogen_mass_from_snia = data.stars.element_mass_fractions_from_snia[:, 3].value * data.stars.masses.to("Msun").value
+        self.oxygen_mass_from_snia = data.stars.element_mass_fractions_from_snia[:, 4].value * data.stars.masses.to("Msun").value
+        self.neon_mass_from_snia = data.stars.element_mass_fractions_from_snia[:, 5].value * data.stars.masses.to("Msun").value
+        self.magnesium_mass_from_snia = data.stars.element_mass_fractions_from_snia[:, 6].value * data.stars.masses.to("Msun").value
+        self.silicon_mass_from_snia = data.stars.element_mass_fractions_from_snia[:, 7].value * data.stars.masses.to("Msun").value
+        self.iron_mass_from_snia = data.stars.element_mass_fractions_from_snia[:, 8].value * data.stars.masses.to("Msun").value
 
         self.europium_mass_from_nsm = data.stars.mass_fractions_from_nsm.value * data.stars.masses.to("Msun").value
         self.europium_mass_from_cejsn = data.stars.mass_fractions_from_cejsn.value * data.stars.masses.to("Msun").value

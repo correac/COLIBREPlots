@@ -2,7 +2,7 @@ from typing import List, Union, Tuple, Dict
 import glob
 import os
 from .utilities import constants
-from .halo_catalogue import HaloCatalogue
+from .halo_catalogue import HaloCatalogue, SOAP
 import swiftsimio
 from argumentparser import ArgumentParser
 
@@ -13,6 +13,7 @@ def read_simulation(config: ArgumentParser, num_arg: int):
     directory = config.directory_list[num_arg]
     snapshot = config.snapshot_list[num_arg]
     catalogue = config.catalogue_list[num_arg]
+    soap = config.soap_list[num_arg]
     sim_name = config.name_list[num_arg]
     output = config.output_directory
 
@@ -21,6 +22,7 @@ def read_simulation(config: ArgumentParser, num_arg: int):
         directory=directory,
         snapshot=snapshot,
         catalogue=catalogue,
+        soap=soap,
         output=output,
         name=sim_name
     )
@@ -34,6 +36,7 @@ class SimInfo:
         directory: str,
         snapshot: str,
         catalogue: str,
+        soap: str,
         output: str,
         name: Union[str, None]
     ):
@@ -58,19 +61,11 @@ class SimInfo:
 
         self.directory = directory
         self.snapshot_name = snapshot
-        self.catalogue_name = catalogue
-        self.output_path = output
-
-        catalogue_base_name = "".join([s for s in self.catalogue_name if not s.isdigit() and s != "_"])
-        catalogue_base_name = os.path.splitext(catalogue_base_name)[0]
-        self.catalogue_base_name = catalogue_base_name
-
         base_name = "".join([s for s in self.snapshot_name if not s.isdigit() and s != "_"])
         base_name = os.path.splitext(base_name)[0]
         self.snapshot_base_name = base_name
 
-        # Find the group and particle catalogue files
-        self.__find_groups_and_particles_catalogues()
+        self.output_path = output
 
         # Load snapshot via swiftsimio
         self.snapshot = swiftsimio.load(f"{self.directory}/{self.snapshot_name}")
@@ -132,15 +127,29 @@ class SimInfo:
         self.min_stellar_mass = 10 * self.snapshot.stars.masses[0].to('Msun')
         self.min_gas_mass = 10 * self.snapshot.gas.masses[0].to('Msun')
 
-        # print("Minimum stellar mass, [1e6Msun] ", self.min_stellar_mass.value/1e6)
-        # print("Minimum gas mass, [1e6Msun] ", self.min_gas_mass.value/1e6)
+        if catalogue is not None:
+            self.catalogue_name = catalogue
+            catalogue_base_name = "".join([s for s in self.catalogue_name if not s.isdigit() and s != "_"])
+            catalogue_base_name = os.path.splitext(catalogue_base_name)[0]
+            self.catalogue_base_name = catalogue_base_name
 
-        # Object containing halo properties (from halo catalogue)
-        self.halo_data = HaloCatalogue(
-            path_to_catalogue=f"{self.directory}/{self.catalogue_name}",
-            galaxy_min_stellar_mass=self.min_stellar_mass,
-            galaxy_min_gas_mass=self.min_gas_mass,
-        )
+            # Find the group and particle catalogue files
+            self.__find_groups_and_particles_catalogues()
+
+            # Object containing halo properties (from halo catalogue)
+            self.halo_data = HaloCatalogue(
+                path_to_catalogue=f"{self.directory}/{self.catalogue_name}",
+                galaxy_min_stellar_mass=self.min_stellar_mass,
+                galaxy_min_gas_mass=self.min_gas_mass,
+            )
+
+        else:
+            self.soap_name = soap
+            self.halo_data = SOAP(
+                path_to_catalogue=f"{self.directory}/{self.soap_name}",
+                galaxy_min_stellar_mass=self.min_stellar_mass,
+                galaxy_min_gas_mass=self.min_gas_mass,
+            )
 
         print(f"Data from run '{self.simulation_name}' has been loaded! \n")
 

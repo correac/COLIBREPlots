@@ -11,7 +11,9 @@ class ArgumentParser(object):
     # List of snapshots that are to be processed.
     snapshot_list: List[str]
     # List of catalogues (in the same order as snapshots) to be processed.
-    catalogue_list: List[str]
+    catalogue_list: List[Optional[str]]
+    # List of catalogues (in the same order as snapshots) to be processed.
+    soap_list: List[Optional[str]]
     # List of directories that contain the above snapshots and catalogues
     directory_list: List[str]
     # List of representative names for the snapshots; may be a list of Nones
@@ -48,7 +50,18 @@ class ArgumentParser(object):
                 "catalogue_0000.properties"
             ),
             type=str,
-            required=True,
+            required=False,
+            nargs="*",
+        )
+
+        parser.add_argument(
+            "-so",
+            "--soap",
+            help=(
+                "SOAP catalogue list. Example: SOAP_halo_properties_0000.hdf5"
+            ),
+            type=str,
+            required=False,
             nargs="*",
         )
 
@@ -91,8 +104,17 @@ class ArgumentParser(object):
         args = parser.parse_args()
 
         self.snapshot_list = args.snapshots
-        self.catalogue_list = args.catalogues
         self.directory_list = args.input_directories
+
+        if args.catalogues is not None:
+            self.catalogue_list = args.catalogues
+        else:
+            self.catalogue_list = [None] * len(self.directory_list)
+
+        if args.soap is not None:
+            self.soap_list = args.soap
+        else:
+            self.soap_list = [None] * len(self.directory_list)
 
         if args.run_names is not None:
             self.name_list = args.run_names
@@ -104,12 +126,16 @@ class ArgumentParser(object):
         self.number_of_inputs = len(args.snapshots)
         self.min_stellar_mass = unyt.unyt_quantity(args.min_stellar_mass, "Msun")
 
+        if args.catalogues is None and args.soap is None:
+            raise IOError("No SOAP nor VR catalogues provided!")
+
         print("")
         print("Welcome to COLIBRE Chemistry Plots!")
         print("Here are your parse arguments:")
         print("---------------------\n")
         print(f"Snapshot list: {self.snapshot_list}")
         print(f"Catalogue list: {self.catalogue_list}")
+        print(f"SOAP Catalogue list: {self.soap_list}")
         print(f"Input directory list: {self.directory_list}")
         print(f"Run names: {self.name_list}")
         print(f"Output directory: {self.output_directory}")

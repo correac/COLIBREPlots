@@ -30,27 +30,35 @@ def read_galactic_abundances(sim_info):
         Mg_SNII = file["Data/Mg_SNII"][:]
         O_SNII = file["Data/O_SNII"][:]
         Si_SNII = file["Data/Si_SNII"][:]
-        Fe_SNII = file["Data/Fe_SNII"][:]
         Ne_SNII = file["Data/Ne_SNII"][:]
+        Fe_SNII = file["Data/Fe_SNII"][:]
 
+        C_SNIa = file["Data/C_SNIa"][:]
+        N_SNIa = file["Data/N_SNIa"][:]
+        Mg_SNIa = file["Data/Mg_SNIa"][:]
+        O_SNIa = file["Data/O_SNIa"][:]
+        Si_SNIa = file["Data/Si_SNIa"][:]
+        Ne_SNIa = file["Data/Ne_SNIa"][:]
         Fe_SNIa = file["Data/Fe_SNIa"][:]
         HaloID = file["Data/HostHaloID"][:]
 
 
     return {"C":C, "N":N, "Mg":Mg, "O":O, "Si":Si, "Ne":Ne, "Fe":Fe,
             "Fe_AGB":Fe_AGB, "C_AGB":C_AGB, "N_AGB":N_AGB, "Mg_AGB":Mg_AGB,
-            "O_AGB":O_AGB, "Si_AGB":Si_AGB, "Ne_AGB":Ne_AGB, "Fe_SNIa":Fe_SNIa,
+            "O_AGB":O_AGB, "Si_AGB":Si_AGB, "Ne_AGB":Ne_AGB,
             "Fe_SNII": Fe_SNII, "C_SNII": C_SNII, "N_SNII": N_SNII, "Mg_SNII": Mg_SNII,
-            "O_SNII": O_SNII, "Si_SNII": Si_SNII, "Ne_SNII": Ne_SNII, "HaloIndex":HaloID}
+            "O_SNII": O_SNII, "Si_SNII": Si_SNII, "Ne_SNII": Ne_SNII,
+            "Fe_SNIa": Fe_SNIa, "C_SNIa": C_SNIa, "N_SNIa": N_SNIa, "Mg_SNIa": Mg_SNIa,
+            "O_SNIa": O_SNIa, "Si_SNIa": Si_SNIa, "Ne_SNIa": Ne_SNIa,
+            "HaloIndex":HaloID}
 
 def plot_pie(ax, element, data):
 
     HaloIndx = data["HaloIndex"]
     mass_AGB = data[element+"_AGB"]
     mass_SNII = data[element+"_SNII"]
+    mass_SNIa = data[element+"_SNIa"]
     total_mass = data[element]
-    if element == 'Fe':
-        mass_SNIa = data['Fe_SNIa']
 
     # unique_HaloIndx = np.unique(HaloIndx)
     # num_sample = len(unique_HaloIndx)
@@ -65,15 +73,10 @@ def plot_pie(ax, element, data):
     #
     # print(np.median(mass_frac_AGB),np.median(mass_frac_CCSN))
 
-    if element == 'Fe':
-        masses = [np.sum(mass_AGB) / np.sum(total_mass),
-                  np.sum(mass_SNII) / np.sum(total_mass),
-                  np.sum(mass_SNIa) / np.sum(total_mass)]
-        color_list = ['lightskyblue', 'steelblue', 'khaki']
-    else:
-        masses = [np.sum(mass_AGB) / np.sum(total_mass),
-                  np.sum(mass_SNII) / np.sum(total_mass)]
-        color_list = ['lightskyblue', 'steelblue']
+    masses = [np.sum(mass_AGB) / np.sum(total_mass),
+              np.sum(mass_SNII) / np.sum(total_mass),
+              np.sum(mass_SNIa) / np.sum(total_mass)]
+    color_list = ['lightskyblue', 'steelblue', 'khaki']
 
     ax.pie(masses, autopct='%1.1f%%', radius=1.2, colors=color_list,
            wedgeprops=dict(edgecolor='w'))

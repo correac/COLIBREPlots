@@ -39,6 +39,12 @@ def calculate_MW_abundances(sim_info):
     Ne_snii = []
     Fe_snii = []
 
+    C_snia = []
+    N_snia = []
+    Mg_snia = []
+    O_snia = []
+    Si_snia = []
+    Ne_snia = []
     Fe_snia = []
 
     Eu_nsm = []
@@ -93,6 +99,12 @@ def calculate_MW_abundances(sim_info):
         Ne_snii = np.append(Ne_snii, part_data.stars.neon_mass_from_snii[bound_particles_only])
         Fe_snii = np.append(Fe_snii, part_data.stars.iron_mass_from_snii[bound_particles_only])
 
+        C_snia = np.append(C_snia, part_data.stars.carbon_mass_from_snia[bound_particles_only])
+        N_snia = np.append(N_snia, part_data.stars.nitrogen_mass_from_snia[bound_particles_only])
+        Mg_snia = np.append(Mg_snia, part_data.stars.magnesium_mass_from_snia[bound_particles_only])
+        O_snia = np.append(O_snia, part_data.stars.oxygen_mass_from_snia[bound_particles_only])
+        Si_snia = np.append(Si_snia, part_data.stars.silicon_mass_from_snia[bound_particles_only])
+        Ne_snia = np.append(Ne_snia, part_data.stars.neon_mass_from_snia[bound_particles_only])
         Fe_snia = np.append(Fe_snia, part_data.stars.iron_mass_from_snia[bound_particles_only])
 
         Eu_nsm = np.append(Eu_nsm, part_data.stars.europium_mass_from_nsm[bound_particles_only])
@@ -111,7 +123,9 @@ def calculate_MW_abundances(sim_info):
             "C_agb":C_agb, "N_agb":N_agb, "Mg_agb":Mg_agb, "O_agb":O_agb,
             "Si_agb":Si_agb, "Ne_agb":Ne_agb, "Fe_agb":Fe_agb,
             "C_snii": C_snii, "N_snii": N_snii, "Mg_snii": Mg_snii, "O_snii": O_snii,
-            "Si_snii": Si_snii, "Ne_snii": Ne_snii, "Fe_snii": Fe_snii, "Fe_snia": Fe_snia,
+            "Si_snii": Si_snii, "Ne_snii": Ne_snii, "Fe_snii": Fe_snii,
+            "C_snia": C_snia, "N_snia": N_snia, "Mg_snia": Mg_snia, "O_snia": O_snia,
+            "Si_snia": Si_snia, "Ne_snia": Ne_snia, "Fe_snia": Fe_snia,
             "Eu_nsm": Eu_nsm, "Eu_coll": Eu_coll, "Eu_cejsn":Eu_cejsn,
             "Rgal": galactocentric_radius, "zgal":galactocentric_zcoordinate,
             "halo_index": host_halo_indx, "galaxyKappa": host_galaxy_kappa_parameter,
@@ -157,6 +171,13 @@ def make_post_processing_MW_for_abundance_contribution(config_parameters):
         f.create_dataset('Si_SNII', data=data["Si_snii"])
         f.create_dataset('Ne_SNII', data=data["Ne_snii"])
         f.create_dataset('Fe_SNII', data=data["Fe_snii"])
+
+        f.create_dataset('C_SNIa', data=data["C_snia"])
+        f.create_dataset('N_SNIa', data=data["N_snia"])
+        f.create_dataset('Mg_SNIa', data=data["Mg_snia"])
+        f.create_dataset('O_SNIa', data=data["O_snia"])
+        f.create_dataset('Si_SNIa', data=data["Si_snia"])
+        f.create_dataset('Ne_SNIa', data=data["Ne_snia"])
         f.create_dataset('Fe_SNIa', data=data["Fe_snia"])
 
         f.create_dataset('Eu_NSM', data=data["Eu_nsm"])

@@ -3,6 +3,7 @@ import h5py
 from simulation.utilities import constants
 import matplotlib.pylab as plt
 import pandas as pd
+import scipy.stats as stats
 
 def make_hist(x, y, cut, xi, yi):
 
@@ -632,3 +633,181 @@ def plot_MW_scatter(element, with_label):
     else:
         plt.plot(delta, sig_y, '*', ms=7, markeredgecolor='black',
                  markeredgewidth=0.2, color='lightsteelblue')
+
+def plot_Zahid2017():
+
+    Z_solar_obs = 0.0142
+    input_filename = "./plotter/Observational_data/Zahid_2017.txt"
+
+    # Read the data
+    raw = np.loadtxt(input_filename)
+    M_star = raw[:, 1]
+    Z_star = 10 ** raw[:, 3] * Z_solar_obs / constants.Zsolar
+
+    mass_bins = np.arange(8.55, 10.95, 0.1)
+    mass_bin_centers = 0.5 * (mass_bins[1:] + mass_bins[:-1])
+    Z_median, _, _ = stats.binned_statistic(
+        M_star, Z_star, statistic="median", bins=mass_bins
+    )
+    Z_std_up, _, _ = stats.binned_statistic(
+        M_star, Z_star, statistic=lambda x: np.percentile(x, 84.0), bins=mass_bins
+    )
+    Z_std_do, _, _ = stats.binned_statistic(
+        M_star, Z_star, statistic=lambda x: np.percentile(x, 16.0), bins=mass_bins
+    )
+
+    M_star = 10 ** mass_bin_centers
+    Z_star = Z_median
+    # Define the scatter as offset from the mean value
+    y_scatter = ((Z_median - Z_std_do, Z_std_up - Z_median))
+    plt.errorbar(M_star, Z_star, yerr=y_scatter, color='khaki',
+                 marker='o', markersize=6, lw=1, markeredgecolor='black',
+                 markeredgewidth=0.2, linestyle='none', label='Zahid et al. (2017)')
+
+def plot_gallazi():
+
+    h_obs = 0.7
+    h_sim = 0.6777
+    Z_solar_obs = 0.02
+    input_filename = "./plotter/Observational_data/Gallazzi_2005_ascii.txt"
+
+    # Read the data
+    raw = np.loadtxt(input_filename)
+    M_star = (10 ** raw[:, 0]  * (h_sim / h_obs) ** -2 * constants.kroupa_to_chabrier_mass)
+    Z_median = 10 ** raw[:, 1] * Z_solar_obs / constants.Zsolar
+    Z_lo = 10 ** raw[:, 2] * Z_solar_obs / constants.Zsolar
+    Z_hi = 10 ** raw[:, 3] * Z_solar_obs / constants.Zsolar
+
+    # Define the scatter as offset from the mean value
+    y_scatter = ((Z_median - Z_lo, Z_hi - Z_median))
+
+    plt.errorbar(M_star, Z_median, yerr=y_scatter, color='sandybrown',
+                 markeredgecolor='black', markeredgewidth=0.2,
+                 marker='*', markersize=8, linestyle='none', lw=1, label='Gallazi et al. (2005)')
+
+def plot_Kudritzki():
+
+    Z_solar_obs = 0.0142
+    input_filename = "./plotter/Observational_data/Kudritzki_2016.txt"
+
+    # Read the data
+    raw = np.loadtxt(input_filename)
+    M_star = 10 ** raw[:, 0]
+    Z_median = 10 ** raw[:, 1] * Z_solar_obs / constants.Zsolar
+
+    plt.plot(M_star, Z_median, 'x', ms=5, color='grey', label='Kudritzki et al. (2016)', zorder=1000)
+
+def plot_Yates():
+
+    Z_solar_obs = 0.0142
+    input_filename = "./plotter/Observational_data/Yates_2021.txt"
+
+    # Read the data
+    raw = np.loadtxt(input_filename)
+    M_star = 10 ** raw[:, 0]
+    Z_median = 10 ** raw[:, 1] * Z_solar_obs / constants.Zsolar
+    Z_std_lo = 10 ** raw[:, 2] * Z_solar_obs / constants.Zsolar
+    Z_std_hi = 10 ** raw[:, 3] * Z_solar_obs / constants.Zsolar
+    y_scatter = ((Z_median - Z_std_lo, Z_std_hi - Z_median))
+
+    plt.errorbar(M_star, Z_median, yerr=y_scatter, color='lightgrey',
+                 markeredgecolor='black', markeredgewidth=0.2,
+                 marker='v', markersize=6, linestyle='none', lw=1, label='Yates et al. (2021)')
+
+
+def plot_Kirby():
+
+    input_filename = "./plotter/Observational_data/Kirby_2013_ascii.dat"
+
+    # Read the data
+    raw = np.loadtxt(input_filename)
+    M_star = 10 ** raw[:, 0] * constants.kroupa_to_chabrier_mass
+    M_star_lo = 10 ** (raw[:, 0] - raw[:, 1]) * constants.kroupa_to_chabrier_mass
+    M_star_hi = 10 ** (raw[:, 0] + raw[:, 2]) * constants.kroupa_to_chabrier_mass
+
+    Z_star = 10 ** raw[:, 3]  # Z/Z_sun
+    Z_star_lo = 10 ** (raw[:, 3] - raw[:, 4])  # Z/Z_sun
+    Z_star_hi = 10 ** (raw[:, 3] + raw[:, 5]) # Z/Z_sun
+
+    # Define the scatter as offset from the mean value
+    x_scatter = ((M_star - M_star_lo, M_star_hi - M_star))
+    y_scatter = ((Z_star - Z_star_lo, Z_star_hi - Z_star))
+
+    plt.errorbar(M_star, Z_star, xerr=x_scatter, yerr=y_scatter, color='salmon',
+                 markeredgecolor='black', markeredgewidth=0.2, marker='>',
+                 markersize=6, linestyle='none', lw=1, label='Kirby et al. (2013)')
+
+def plot_Panter_2018():
+
+    Mstellar = np.arange(8, 12, 0.2)
+    Mstellar = 10**Mstellar
+
+    A = -0.452
+    B = 0.572
+    Delta = 1.04
+    Mc = 9.66
+    x = (np.log10(Mstellar) - Mc ) / Delta
+    best_fit = 10**(A + B * np.tanh(x))
+    Z_solar_obs = 0.02
+    best_fit = (best_fit * Z_solar_obs) / constants.Zsolar
+    plt.plot(Mstellar, best_fit, '--', lw=2, color='grey', label='Panter et al. (2008)')
+
+def plot_Curti():
+    raw = np.loadtxt("./plotter/Observational_data/Curti2020.txt")
+
+    Mstar = 10.0 ** raw[:, 0]
+    metal = raw[:, 1]
+    metal_error = raw[:, 2]
+
+    plt.errorbar(Mstar, metal, yerr=metal_error, color='salmon',
+                 markeredgecolor='black', markeredgewidth=0.2, marker='>',
+                 markersize=6, linestyle='none', lw=1, label='Curti et al. (2020)')
+
+def plot_Fraser():
+    input_filename = "./plotter/Observational_data/Fraser-McKelvie_2021.csv"
+    df = pd.read_csv(input_filename, sep=',')
+    Mstar = 10**df.values[:,4]
+    Zgas = df.values[:,6] # The raw Zgas is 12 + log10 (O/H)
+
+    plt.plot(Mstar, Zgas, 'x', ms=5, mew=0.3, color='grey', label='Fraser-McKelvie et al. (2021)')
+
+
+def plot_Tremonti():
+    h_obs = 0.7
+    h_sim = 0.6777
+
+    input_filename = "./plotter/Observational_data/Tremonti_2004_ascii.txt"
+    # Read the data
+    raw = np.loadtxt(input_filename)
+    M_star = 10 ** raw[:, 0] * (h_sim / h_obs) ** -2
+    Z_median = raw[:, 3] # 12 + log(O/H)
+    Z_lo = raw[:, 2] # 12 + log(O/H)
+    Z_hi = raw[:, 4] # 12 + log(O/H)
+
+    # Define the scatter as offset from the mean value
+    y_scatter = (Z_median - Z_lo, Z_hi - Z_median)
+
+    plt.errorbar(M_star, Z_median, yerr=y_scatter, color='lightgrey',
+                 markeredgecolor='black', markeredgewidth=0.2,
+                 marker='v', markersize=6, linestyle='none', lw=1, label='Tremonti et al. (2004)')
+
+
+def plot_Andrews():
+
+    # Use the fit (equation 5) with the parameters from table 4
+    log10_M_star_min = 7.4
+    log10_M_star_max = 10.5
+    gamma = 0.640
+    log10_M_TO = 8.901
+    Z_asm = 8.798
+
+    M_TO = (10 ** log10_M_TO)
+
+    M_star = np.logspace(log10_M_star_min, log10_M_star_max, 100)
+    Z_star = (Z_asm - np.log10(1.0 + (M_TO / M_star) ** gamma)) # 12 + log(O/H)
+
+    # Convert the masses to Chabrier IMF
+    M_star = M_star * constants.kroupa_to_chabrier_mass
+
+    plt.plot(M_star, Z_star, '*', ms=7, markeredgecolor='black',
+             markeredgewidth=0.2, color='lightsteelblue',label='Andrews $\&$ Martini (2013)')
