@@ -51,9 +51,10 @@ def calculate_abundances_from_particles(sim_info, sample):
 
 def calculate_galaxies_abundances(sim_info):
 
-    select_sample = np.where(sim_info.halo_data.log10_stellar_mass >= 8)[0]
-    select_centrals = np.where(sim_info.halo_data.type[select_sample] == 10)[0]
-    sample = select_sample[select_centrals]
+    #select_sample = np.where(sim_info.halo_data.log10_stellar_mass >= 8)[0]
+    #select_centrals = np.where(sim_info.halo_data.type[select_sample] == 10)[0]
+    #sample = select_sample[select_centrals]
+    sample = np.where(sim_info.halo_data.type == 10)[0]
 
     Z = sim_info.halo_data.metallicity[sample]
     halo_indx_list = sim_info.halo_data.halo_index[sample]
