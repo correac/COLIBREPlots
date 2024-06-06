@@ -19,7 +19,7 @@ def plot_median_relation_one_sigma(x, y, color, output_name):
     y = y[nonan]
 
     num_min_per_bin = 5
-    bins = np.arange(9, 12, 0.2)
+    bins = np.arange(6, 12, 0.2)
     bins = 10**bins
     ind = np.digitize(x, bins)
     ylo = [np.percentile(y[ind == i], 16) for i in range(1, len(bins)) if len(x[ind == i]) > num_min_per_bin]
@@ -49,13 +49,9 @@ def read_data(sim_info):
 
 def plot_mass_metallicity_relation(config_parameters):
 
-    for i in range(config_parameters.number_of_inputs):
+    color_list = ['steelblue', 'lightskyblue', 'y', 'salmon']
 
-        sim_info = read_simulation(config_parameters, i)
-        data = read_data(sim_info)
-
-
-    color_list = ['tab:blue','tab:orange','crimson','darkblue']
+    # color_list = ['tab:blue','tab:orange','crimson','darkblue']
 
     # Plot parameters
     params = {
@@ -75,7 +71,7 @@ def plot_mass_metallicity_relation(config_parameters):
     rcParams.update(params)
     plt.figure()
     ax = plt.subplot(1, 1, 1)
-    plt.grid(linestyle='-', linewidth=0.3)
+    plt.grid(linestyle='-', linewidth=0.2)
 
     plot_Zahid2017()
     plot_gallazi()
@@ -83,7 +79,13 @@ def plot_mass_metallicity_relation(config_parameters):
     plot_Yates()
     plot_Kirby()
     plot_Panter_2018()
-    plot_median_relation_one_sigma(data["Mstellar"], data["Z"]/Zsolar, color='steelblue', output_name='COLIBRE')
+
+    for i in range(config_parameters.number_of_inputs):
+
+        sim_info = read_simulation(config_parameters, i)
+        data = read_data(sim_info)
+        plot_median_relation_one_sigma(data["Mstellar"], data["Z"]/Zsolar,
+                                       color=color_list[i], output_name=sim_info.simulation_name)
 
     plt.axis([1e6, 1e12, 1e-2, 5])
     plt.xscale('log')
@@ -96,6 +98,16 @@ def plot_mass_metallicity_relation(config_parameters):
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
     plt.legend(loc=[0.01,0.59],labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
                frameon=False, fontsize=11, ncol=1, columnspacing=0.23)
+
+    ax2 = ax.twinx()
+    ax2.axis('off')
+    simulation_list = ["L100N752","L050N752","L025N376","L012N188"]
+    for i in range(config_parameters.number_of_inputs):
+        ax2.plot([], [], lw=2, color=color_list[i], label=simulation_list[i])
+
+    ax2.legend(loc=[0.7, 0.05], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+               frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=11, columnspacing=1,
+               numpoints=1)
 
     plt.savefig(config_parameters.output_directory + "Mass_Z_relation.png", dpi=300)
 
@@ -111,7 +123,13 @@ def plot_mass_metallicity_relation(config_parameters):
     plot_Yates()
     plot_Kirby()
     plot_Panter_2018()
-    plot_median_relation_one_sigma(data["Mstellar"], data["FeH"], color='steelblue', output_name='COLIBRE')
+
+    for i in range(config_parameters.number_of_inputs):
+
+        sim_info = read_simulation(config_parameters, i)
+        data = read_data(sim_info)
+        plot_median_relation_one_sigma(data["Mstellar"], data["FeH"],
+                                       color=color_list[i], output_name=sim_info.simulation_name)
 
     plt.axis([1e6, 1e12, 1e-2, 5])
     plt.xscale('log')
@@ -122,8 +140,8 @@ def plot_mass_metallicity_relation(config_parameters):
     plt.xticks([1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12],
                ['$10^{6}$', '$10^{7}$', '$10^{8}$','$10^{9}$','$10^{10}$','$10^{11}$','$10^{12}$'])
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.legend(loc=[0.01,0.59],labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
-               frameon=False, fontsize=11, ncol=1, columnspacing=0.23)
+    # plt.legend(loc=[0.01,0.59],labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+    #            frameon=False, fontsize=11, ncol=1, columnspacing=0.23)
 
     plt.savefig(config_parameters.output_directory + "Mass_FeH_relation.png", dpi=300)
 
@@ -137,7 +155,13 @@ def plot_mass_metallicity_relation(config_parameters):
     plot_Tremonti()
     plot_Andrews()
     plot_Curti()
-    plot_median_relation_one_sigma(data["Mstellar"], data["OH_diffused"], color='steelblue', output_name='COLIBRE')
+
+    for i in range(config_parameters.number_of_inputs):
+
+        sim_info = read_simulation(config_parameters, i)
+        data = read_data(sim_info)
+        plot_median_relation_one_sigma(data["Mstellar"], data["OH_diffused"],
+                                       color=color_list[i], output_name=sim_info.simulation_name)
 
     plt.axis([1e7, 1e12, 7.5, 9.5])
     plt.xscale('log')
@@ -146,6 +170,16 @@ def plot_mass_metallicity_relation(config_parameters):
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
     plt.legend(loc=[0.01,0.7],labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
                frameon=False, fontsize=11, ncol=1, columnspacing=0.23)
+
+    ax2 = ax.twinx()
+    ax2.axis('off')
+    simulation_list = ["L100N752","L050N752","L025N376","L012N188"]
+    for i in range(config_parameters.number_of_inputs):
+        ax2.plot([], [], lw=2, color=color_list[i], label=simulation_list[i])
+
+    ax2.legend(loc=[0.7, 0.05], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+               frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=11, columnspacing=1,
+               numpoints=1)
 
     plt.savefig(config_parameters.output_directory + "Mass_OH_diffuse_relation.png", dpi=300)
 
@@ -159,14 +193,20 @@ def plot_mass_metallicity_relation(config_parameters):
     plot_Tremonti()
     plot_Andrews()
     plot_Curti()
-    plot_median_relation_one_sigma(data["Mstellar"], data["OH_total"], color='steelblue', output_name='COLIBRE')
+
+    for i in range(config_parameters.number_of_inputs):
+
+        sim_info = read_simulation(config_parameters, i)
+        data = read_data(sim_info)
+        plot_median_relation_one_sigma(data["Mstellar"], data["OH_total"],
+                                       color=color_list[i], output_name=sim_info.simulation_name)
 
     plt.axis([1e7, 1e12, 7.5, 9.5])
     plt.xscale('log')
     plt.xlabel("$M_{*}$ [M$_{\odot}$]")
     plt.ylabel("$12+\log_{10}$(O/H) (Dust + Diffuse)")
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.legend(loc=[0.01,0.7],labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
-               frameon=False, fontsize=11, ncol=1, columnspacing=0.23)
+    # plt.legend(loc=[0.01,0.7],labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+    #            frameon=False, fontsize=11, ncol=1, columnspacing=0.23)
 
     plt.savefig(config_parameters.output_directory + "Mass_OH_total_relation.png", dpi=300)

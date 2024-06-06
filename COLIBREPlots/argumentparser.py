@@ -9,7 +9,7 @@ class ArgumentParser(object):
     """
 
     # List of snapshots that are to be processed.
-    snapshot_list: List[str]
+    snapshot_list: List[Optional[str]]
     # List of catalogues (in the same order as snapshots) to be processed.
     catalogue_list: List[Optional[str]]
     # List of catalogues (in the same order as snapshots) to be processed.
@@ -38,7 +38,7 @@ class ArgumentParser(object):
             "--snapshots",
             help="Snapshot list. Do not include directory. Example: snapshot_0000.hdf5",
             type=str,
-            required=True,
+            required=False,
             nargs="*",
         )
 
@@ -103,8 +103,14 @@ class ArgumentParser(object):
 
         args = parser.parse_args()
 
-        self.snapshot_list = args.snapshots
         self.directory_list = args.input_directories
+        self.output_directory = args.output_directory
+        self.number_of_inputs = len(self.directory_list)
+
+        if args.snapshots is not None:
+            self.snapshot_list = args.snapshots
+        else:
+            self.snapshot_list = [None] * len(self.directory_list)
 
         if args.catalogues is not None:
             self.catalogue_list = args.catalogues
@@ -121,13 +127,10 @@ class ArgumentParser(object):
         else:
             self.name_list = [None] * len(self.directory_list)
 
-        self.output_directory = args.output_directory
-
-        self.number_of_inputs = len(args.snapshots)
         self.min_stellar_mass = unyt.unyt_quantity(args.min_stellar_mass, "Msun")
 
         if args.catalogues is None and args.soap is None:
-            raise IOError("No SOAP nor VR catalogues provided!")
+            print("No SOAP nor VR catalogues provide! This is only for plotter then")
 
         print("")
         print("Welcome to COLIBRE Chemistry Plots!")

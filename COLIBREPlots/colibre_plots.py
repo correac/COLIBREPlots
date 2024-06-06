@@ -14,7 +14,7 @@ from argumentparser import ArgumentParser
 #from plotter.pie_charts import plot_pie_charts
 #from plotter.gas_abundance import plot_gas_abundance_gradient
 from analysis.post_processing_mass_metallicity_relation import make_post_processing_galaxies_metallicities
-# from plotter.mass_metallicity_relation import plot_mass_metallicity_relation
+from plotter.mass_metallicity_relation import plot_mass_metallicity_relation
 
 if __name__ == "__main__":
 
@@ -37,5 +37,5 @@ if __name__ == "__main__":
     # make_post_processing_MW_for_abundance_contribution(config_parameters)
     # plot_pie_charts(config_parameters)
 
-    make_post_processing_galaxies_metallicities(config_parameters)
-    # plot_mass_metallicity_relation(config_parameters)
+    # make_post_processing_galaxies_metallicities(config_parameters)
+    plot_mass_metallicity_relation(config_parameters)

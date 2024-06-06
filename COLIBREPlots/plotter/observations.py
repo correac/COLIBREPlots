@@ -660,7 +660,7 @@ def plot_Zahid2017():
     Z_star = Z_median
     # Define the scatter as offset from the mean value
     y_scatter = ((Z_median - Z_std_do, Z_std_up - Z_median))
-    plt.errorbar(M_star, Z_star, yerr=y_scatter, color='khaki',
+    plt.errorbar(M_star, Z_star, yerr=y_scatter, color='slategray',
                  marker='o', markersize=6, lw=1, markeredgecolor='black',
                  markeredgewidth=0.2, linestyle='none', label='Zahid et al. (2017)')
 
@@ -681,8 +681,8 @@ def plot_gallazi():
     # Define the scatter as offset from the mean value
     y_scatter = ((Z_median - Z_lo, Z_hi - Z_median))
 
-    plt.errorbar(M_star, Z_median, yerr=y_scatter, color='sandybrown',
-                 markeredgecolor='black', markeredgewidth=0.2,
+    plt.errorbar(M_star, Z_median, yerr=y_scatter, color='beige',
+                 markeredgecolor='black', markeredgewidth=0.2, ecolor='darkgrey', elinewidth=0.7,
                  marker='*', markersize=8, linestyle='none', lw=1, label='Gallazi et al. (2005)')
 
 def plot_Kudritzki():
@@ -733,7 +733,7 @@ def plot_Kirby():
     x_scatter = ((M_star - M_star_lo, M_star_hi - M_star))
     y_scatter = ((Z_star - Z_star_lo, Z_star_hi - Z_star))
 
-    plt.errorbar(M_star, Z_star, xerr=x_scatter, yerr=y_scatter, color='salmon',
+    plt.errorbar(M_star, Z_star, xerr=x_scatter, yerr=y_scatter, color='silver',
                  markeredgecolor='black', markeredgewidth=0.2, marker='>',
                  markersize=6, linestyle='none', lw=1, label='Kirby et al. (2013)')
 
@@ -759,7 +759,7 @@ def plot_Curti():
     metal = raw[:, 1]
     metal_error = raw[:, 2]
 
-    plt.errorbar(Mstar, metal, yerr=metal_error, color='salmon',
+    plt.errorbar(Mstar, metal, yerr=metal_error, color='lightgrey',
                  markeredgecolor='black', markeredgewidth=0.2, marker='>',
                  markersize=6, linestyle='none', lw=1, label='Curti et al. (2020)')
 
@@ -809,5 +809,5 @@ def plot_Andrews():
     # Convert the masses to Chabrier IMF
     M_star = M_star * constants.kroupa_to_chabrier_mass
 
-    plt.plot(M_star, Z_star, '*', ms=7, markeredgecolor='black',
+    plt.plot(M_star, Z_star, 'o', ms=5, markeredgecolor='black',
              markeredgewidth=0.2, color='lightsteelblue',label='Andrews $\&$ Martini (2013)')
