@@ -424,11 +424,28 @@ def plot_observations_Kirby_2010():
 
 
 def load_MW_data_with_Mg_Fe():
-    file = './plotter/Observational_data/MW.txt'
-    data = np.loadtxt(file)
-    FeH_mw = data[:, 0]
-    MgFe_mw = data[:, 1]
-    return FeH_mw, MgFe_mw
+    # file = './plotter/Observational_data/MW.txt'
+    # data = np.loadtxt(file)
+    # FeH_mw = data[:, 0]
+    # MgFe_mw = data[:, 1]
+
+    file = './plotter/Observational_data/Venn_2004_MW_compilation.txt'
+    data = np.loadtxt(file, usecols=(1,2,3))
+    FeH = data[:,0]
+    MgFe = data[:,1]
+
+    #compute COLIBRE standard ratios
+    Mg_over_Fe = constants.Mg_H_Sun_Asplund - constants.Fe_H_Sun_Asplund
+
+    # tabulate/compute the same ratios from Anders & Grevesse (1989)
+    Fe_over_H_AG89 = 7.67
+    Mg_over_H_AG89 = 7.58
+    Mg_over_Fe_AG89 = Mg_over_H_AG89 - Fe_over_H_AG89
+
+    FeH = FeH + Fe_over_H_AG89 - constants.Fe_H_Sun_Asplund
+    MgFe = MgFe + Mg_over_Fe_AG89 - Mg_over_Fe
+
+    return FeH, MgFe
 
 
 def load_MW_data():
@@ -803,7 +820,7 @@ def plot_Andrews():
 
     M_TO = (10 ** log10_M_TO)
 
-    M_star = np.logspace(log10_M_star_min, log10_M_star_max, 100)
+    M_star = np.logspace(log10_M_star_min, log10_M_star_max, 25)
     Z_star = (Z_asm - np.log10(1.0 + (M_TO / M_star) ** gamma)) # 12 + log(O/H)
 
     # Convert the masses to Chabrier IMF
@@ -811,3 +828,19 @@ def plot_Andrews():
 
     plt.plot(M_star, Z_star, 'o', ms=5, markeredgecolor='black',
              markeredgewidth=0.2, color='lightsteelblue',label='Andrews $\&$ Martini (2013)')
+
+def plot_SAGA():
+    input_filename = "./plotter/Observational_data/SAGA_satellites.txt"
+    raw = np.loadtxt(input_filename)
+
+    M_star = 10 ** raw[:, 0]
+    Z_median = raw[:, 1]  # 12 + log(O/H)
+    Z_lo = raw[:, 2]  # 12 + log(O/H)
+    Z_hi = raw[:, 3]  # 12 + log(O/H)
+
+    # Define the scatter as offset from the mean value
+    y_scatter = (Z_median - Z_lo, Z_hi - Z_median)
+
+    plt.errorbar(M_star, Z_median, yerr=y_scatter, color='grey',
+                 markeredgecolor='black', markeredgewidth=0.2,
+                 marker='*', markersize=6, linestyle='none', lw=1, label='Geha et al. (2024)')

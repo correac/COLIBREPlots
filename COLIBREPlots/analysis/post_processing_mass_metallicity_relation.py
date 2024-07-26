@@ -35,16 +35,19 @@ def calculate_abundances_from_particles(sim_info, sample):
             mass = part_data.gas.masses.value[bound_particles_only]
             O = part_data.gas.oxygen[bound_particles_only]
             H = part_data.gas.hydrogen[bound_particles_only]
+            T = part_data.gas.temperature[bound_particles_only]
+            nH = part_data.gas.hydrogen_number_density[bound_particles_only]
+            select_cold_dense = np.where((T<10**4.5) & (nH>0.1))[0]
             gas_O_over_H_total = O / (16. * H)
-            O_H_ratio = np.sum(gas_O_over_H_total * mass) / np.sum(mass)
-            O_H_ratio = np.log10(O_H_ratio / Zsolar) + O_H_Sun_Asplund
+            O_H_ratio = np.sum(gas_O_over_H_total[select_cold_dense] * mass[select_cold_dense]) / np.sum(mass[select_cold_dense])
+            #O_H_ratio = np.log10(O_H_ratio / Zsolar) + O_H_Sun_Asplund
             O_H_gas_total[i] = O_H_ratio
 
             O = part_data.gas.oxygen_diffuse[bound_particles_only]
             H = part_data.gas.hydrogen_diffuse[bound_particles_only]
             gas_O_over_H_diffuse = O / (16. * H)
-            O_H_ratio = np.sum(gas_O_over_H_diffuse * mass) / np.sum(mass)
-            O_H_ratio = np.log10(O_H_ratio / Zsolar) + O_H_Sun_Asplund
+            O_H_ratio = np.sum(gas_O_over_H_diffuse[select_cold_dense] * mass[select_cold_dense]) / np.sum(mass[select_cold_dense])
+            #O_H_ratio = np.log10(O_H_ratio / Zsolar) + O_H_Sun_Asplund
             O_H_gas_diffused[i] = O_H_ratio
 
     return Fe_H, O_H_gas_total, O_H_gas_diffused
