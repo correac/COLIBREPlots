@@ -15,6 +15,8 @@ def calculate_MW_abundances(sim_info):
     sample = select_sample[select_centrals]
     num_sample = len(sample)
 
+    H = []
+    He = []
     C = []
     N = []
     Mg = []
@@ -75,6 +77,8 @@ def calculate_MW_abundances(sim_info):
 
         part_data.stars.calculate_elements_masses(sim_info, sample[i])
 
+        H = np.append(H, part_data.stars.hydrogen[bound_particles_only] * mass)
+        He = np.append(He, part_data.stars.helium[bound_particles_only] * mass)
         C = np.append(C, part_data.stars.carbon[bound_particles_only] * mass)
         N = np.append(N, part_data.stars.nitrogen[bound_particles_only] * mass)
         Mg = np.append(Mg, part_data.stars.magnesium[bound_particles_only] * mass)
@@ -119,7 +123,7 @@ def calculate_MW_abundances(sim_info):
         host_galaxy_kappa_parameter = np.append(host_galaxy_kappa_parameter, np.ones(num_parts) * kappa)
         host_galaxy_stellar_mass = np.append(host_galaxy_stellar_mass, np.ones(num_parts) * galaxy_stellar_mass)
 
-    return {"C":C, "N":N, "Mg":Mg, "O":O, "Si":Si, "Ne":Ne, "Fe":Fe,
+    return {"H":H, "He":He, "C":C, "N":N, "Mg":Mg, "O":O, "Si":Si, "Ne":Ne, "Fe":Fe,
             "C_agb":C_agb, "N_agb":N_agb, "Mg_agb":Mg_agb, "O_agb":O_agb,
             "Si_agb":Si_agb, "Ne_agb":Ne_agb, "Fe_agb":Fe_agb,
             "C_snii": C_snii, "N_snii": N_snii, "Mg_snii": Mg_snii, "O_snii": O_snii,
@@ -148,6 +152,8 @@ def make_post_processing_MW_for_abundance_contribution(config_parameters):
         f.create_dataset('HostGalaxyKappa', data=data["galaxyKappa"])
         f.create_dataset('HostGalaxylogMstellar', data=data["galaxylogMs"])
 
+        f.create_dataset('H', data=data["H"])
+        f.create_dataset('He', data=data["He"])
         f.create_dataset('C', data=data["C"])
         f.create_dataset('N', data=data["N"])
         f.create_dataset('Mg', data=data["Mg"])
