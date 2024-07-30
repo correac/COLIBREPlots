@@ -22,18 +22,18 @@ def read_galactic_abundances(sim_info):
         Si_Fe = file["Data/Si_Fe"][:]
         Fe_H = file["Data/Fe_H"][:]
         Ne_Fe = file["Data/Ne_Fe"][:]
-        # Ba_Fe = file["Data/Ba_Fe"][:]
-        # Sr_Fe = file["Data/Sr_Fe"][:]
-        # Eu_Fe = file["Data/Eu_Fe"][:]
+        Ba_Fe = file["Data/Ba_Fe"][:]
+        Sr_Fe = file["Data/Sr_Fe"][:]
+        Eu_Fe = file["Data/Eu_Fe"][:]
 
-    # Mg_H = Mg_Fe + Fe_H
-    # Ba_Mg = Ba_Fe - Mg_Fe
-    # Sr_Mg = Sr_Fe - Mg_Fe
-    # Eu_Mg = Eu_Fe - Mg_Fe
+    Mg_H = Mg_Fe + Fe_H
+    Ba_Mg = Ba_Fe - Mg_Fe
+    Sr_Mg = Sr_Fe - Mg_Fe
+    Eu_Mg = Eu_Fe - Mg_Fe
 
     return {"Fe_H":Fe_H, "C_Fe":C_Fe, "N_Fe":N_Fe, "Mg_Fe":Mg_Fe, "O_Fe":O_Fe,
-            "Si_Fe":Si_Fe, "Ne_Fe":Ne_Fe}#, "Ba_Fe":Ba_Fe, "Sr_Fe":Sr_Fe, "Eu_Fe":Eu_Fe,
-            #"Mg_H":Mg_H, "Ba_Mg":Ba_Mg, "Sr_Mg":Sr_Mg, "Eu_Mg":Eu_Mg}
+            "Si_Fe":Si_Fe, "Ne_Fe":Ne_Fe, "Ba_Fe":Ba_Fe, "Sr_Fe":Sr_Fe, "Eu_Fe":Eu_Fe,
+            "Mg_H":Mg_H, "Ba_Mg":Ba_Mg, "Sr_Mg":Sr_Mg, "Eu_Mg":Eu_Mg}
 
 
 def plot_abundance_ratios_comparison(config_parameters):

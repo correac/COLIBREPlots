@@ -3,7 +3,7 @@ from matplotlib.pylab import rcParams
 import numpy as np
 import h5py
 from simulation.simulation_data import read_simulation
-
+from simulation.utilities import constants
 
 def read_galactic_abundances(sim_info):
 
@@ -54,24 +54,40 @@ def read_galactic_abundances(sim_info):
 
 def plot_pie(ax, element, data):
 
+    print(element)
+
+    low_limit = 1e-8
     HaloIndx = data["HaloIndex"]
     mass_AGB = data[element+"_AGB"]
     mass_SNII = data[element+"_SNII"]
     mass_SNIa = data[element+"_SNIa"]
     total_mass = data[element]
+    mass_Fe = data["Fe"]
+    mass_H = data["H"]
 
-    # unique_HaloIndx = np.unique(HaloIndx)
-    # num_sample = len(unique_HaloIndx)
-    #
-    # mass_frac_AGB = np.zeros(num_sample)
-    # mass_frac_CCSN = np.zeros(num_sample)
-    #
-    # for i in range(num_sample):
-    #     select = np.where(HaloIndx == unique_HaloIndx[i])[0]
-    #     mass_frac_AGB[i] = np.sum(mass_AGB[select]) / np.sum(total_mass[select])
-    #     mass_frac_CCSN[i] = np.sum(mass_SNII[select]) / np.sum(total_mass[select])
-    #
-    # print(np.median(mass_frac_AGB),np.median(mass_frac_CCSN))
+    unique_HaloIndx = np.unique(HaloIndx)
+    num_sample = len(unique_HaloIndx)
+
+    mass_frac_AGB = np.zeros(num_sample)
+    mass_frac_CCSN = np.zeros(num_sample)
+    mass_frac_SNIa = np.zeros(num_sample)
+    FeH_median = np.zeros(num_sample)
+    FeH_mean = np.zeros(num_sample)
+
+    for i in range(num_sample):
+        select = np.where(HaloIndx == unique_HaloIndx[i])[0]
+
+        FeH_stars = np.clip(mass_Fe[select], low_limit, None) / mass_H[select]
+        FeH_stars = np.log10(FeH_stars) - constants.Fe_H_Sun
+        FeH_median[i] = np.median(FeH_stars)
+        FeH_mean[i] = np.mean(FeH_stars)
+
+        mass_frac_AGB[i] = np.sum(mass_AGB[select]) / np.sum(total_mass[select])
+        mass_frac_CCSN[i] = np.sum(mass_SNII[select]) / np.sum(total_mass[select])
+        mass_frac_SNIa[i] = np.sum(mass_SNIa[select]) / np.sum(total_mass[select])
+
+        sum_all = mass_frac_AGB[i] + mass_frac_CCSN[i] + mass_frac_SNIa[i]
+        print(FeH_median[i], FeH_mean[i], mass_frac_AGB[i], mass_frac_CCSN[i], mass_frac_SNIa[i], sum_all)
 
     masses = [np.sum(mass_AGB) / np.sum(total_mass),
               np.sum(mass_SNII) / np.sum(total_mass),
