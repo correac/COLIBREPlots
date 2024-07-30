@@ -48,6 +48,7 @@ class load_star_particle_data:
 
         # Reading abundances
         self.hydrogen = data.stars.element_mass_fractions.hydrogen.value
+        self.helium = data.stars.element_mass_fractions.helium.value
         self.carbon = data.stars.element_mass_fractions.carbon.value
         self.nitrogen = data.stars.element_mass_fractions.nitrogen.value
         self.neon = data.stars.element_mass_fractions.neon.value
