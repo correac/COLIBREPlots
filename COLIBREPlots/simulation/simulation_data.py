@@ -147,17 +147,19 @@ class SimInfo:
                 galaxy_min_stellar_mass=self.min_stellar_mass,
                 galaxy_min_gas_mass=self.min_gas_mass,
             )
+        else:
+            print("We don't have a halo catalogue loaded. Ok?")
 
-        elif soap is not None:
+        if soap is not None:
             self.soap_name = soap
             self.halo_data = SOAP(
                 path_to_catalogue=f"{self.directory}/{self.soap_name}",
                 galaxy_min_stellar_mass=self.min_stellar_mass,
                 galaxy_min_gas_mass=self.min_gas_mass,
             )
-
         else:
-            print("We don't have a halo catalogue loaded. Ok?")
+            self.soap_name = None
+            print("We don't have a SOAP catalogue loaded. Ok?")
 
         print(f"Data from run '{self.simulation_name}' has been loaded! \n")
 

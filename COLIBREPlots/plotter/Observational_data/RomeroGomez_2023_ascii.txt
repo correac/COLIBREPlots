@@ -1,0 +1,35 @@
+# Compilation of [alpha/Fe] values from the dwarf spherical galaxies around MW.
+# See table B2 of Romero-Gomez et al. (2023). 2023MNRAS.522..130R. 
+# Note that alpha here corresponds to Mg. Zero value stellar masses need to be completed
+# following literature compilation. Errors correspond to the standard deviation estimation.
+#
+# Name alpha/Fe(P_50) Error log10(Mstar/Msun) 
+Segue1		0.56	0.03	2.53
+TucanaIII	0.48	0.13	2.90	
+Carina3		0.73	0.02	0
+TriangulumII	0.42	0.27	0
+ReticulumII	0.33	0.01	3.41
+UsarMajorII	0.52	0.08	3.73
+Carina2		0.29	0.08	0
+Segue2		0.31	0.21	3.14
+ComaBerenices	0.57	0.08	3.68
+BootesII	0.36	0.01	3
+TucanaII	0.32	0.08	0
+BootesI		0.29	0.08	4.46
+UrsaMinor	0.17	0.21	4.28
+Draco		0.02	0.21	5.51
+Sculptor	0.09	0.1	6.59
+HorologiumI	-0.09	0.03	0
+Sextans1	0.22	0.09	5.84
+Carina		0.3	0.07	5.57
+GrusI		0.32	0.01	0
+Hercules	0.4	0.01	4.57
+Fornax		-0.01	0.12	7.39
+LeoIV		0.23	0.05	3.93
+CanesVenaticiII	0.16	0.01	3.90
+CanesVenaticiI	0.25	0.01	5.48
+LeoII		0.15	0.06	6.07
+LeoA		0.02	0.1	6.47
+Aquarius	-0.03	0.09	6.15
+SagDIG		0.03	0.1	7.32
+

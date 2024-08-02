@@ -206,6 +206,7 @@ def plot_abundance_ratios_single_run(config_parameters):
     ax = plt.subplot(2, 3, 1)
     plt.grid(linestyle='-', linewidth=0.3)
 
+    print("C_Fe")
     plot_APOGEE(("Fe_H","C_Fe"))
     plot_median_relation(data["Fe_H"], data["C_Fe"], color_list[i], sim_info.simulation_name)
 
@@ -228,6 +229,7 @@ def plot_abundance_ratios_single_run(config_parameters):
     ax = plt.subplot(2, 3, 2)
     plt.grid(linestyle='-', linewidth=0.3)
 
+    print("N_Fe")
     plot_APOGEE(("Fe_H","N_Fe"))
     plot_median_relation(data["Fe_H"], data["N_Fe"], color_list[i], None)
 
@@ -244,6 +246,7 @@ def plot_abundance_ratios_single_run(config_parameters):
     ax = plt.subplot(2, 3, 3)
     plt.grid(linestyle='-', linewidth=0.3)
 
+    print("Mg_Fe")
     plot_APOGEE(("Fe_H","Mg_Fe"))
     plot_median_relation(data["Fe_H"], data["Mg_Fe"], color_list[i], None)
 
@@ -260,6 +263,7 @@ def plot_abundance_ratios_single_run(config_parameters):
     ax = plt.subplot(2, 3, 4)
     plt.grid(linestyle='-', linewidth=0.3)
 
+    print("O_Fe")
     plot_APOGEE(("Fe_H","O_Fe"))
     plot_median_relation(data["Fe_H"], data["O_Fe"], color_list[i], None)
 
@@ -276,6 +280,7 @@ def plot_abundance_ratios_single_run(config_parameters):
     ax = plt.subplot(2, 3, 5)
     plt.grid(linestyle='-', linewidth=0.3)
 
+    print("Si_Fe")
     plot_APOGEE(("Fe_H", "Si_Fe"))
     plot_median_relation(data["Fe_H"], data["Si_Fe"], color_list[i], None)
 
@@ -292,6 +297,7 @@ def plot_abundance_ratios_single_run(config_parameters):
     ax = plt.subplot(2, 3, 6)
     plt.grid(linestyle='-', linewidth=0.3)
 
+    print("Ne_Fe")
     plot_median_relation(data["Fe_H"], data["Ne_Fe"], color_list[i], None)
 
     plt.axis([-2, 1, -1, 1])
@@ -305,6 +311,7 @@ def plot_abundance_ratios_single_run(config_parameters):
 
     plt.savefig(config_parameters.output_directory + "stellar_abundance_ratio.png", dpi=300)
 
+    print('=====')
     #######
     #######
     #######

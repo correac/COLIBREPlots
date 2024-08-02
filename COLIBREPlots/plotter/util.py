@@ -22,6 +22,8 @@ def plot_median_relation(x, y, color, output_name):
     plt.plot(xm, ym, '-', lw=2.5, color='white', zorder=100)
     plt.plot(xm, ym, '-', lw=1.5, color=color, label=output_name, zorder=100)
 
+    select = np.where((x>-0.1)&(x<0.1))[0]
+    print(np.median(x[select]),np.median(y[select]))
 
 def plot_median_relation_one_sigma(x, y, color, output_name):
     num_min_per_bin = 5
@@ -36,3 +38,20 @@ def plot_median_relation_one_sigma(x, y, color, output_name):
     plt.fill_between(xm, ylo, yhi, color=color, alpha=0.3, edgecolor=None, zorder=0)
     plt.plot(xm, ym, '-', lw=2.5, color='white', zorder=100)
     plt.plot(xm, ym, '-', lw=1.5, color=color, label=output_name, zorder=100)
+
+def func_scatter(x):
+
+    y = np.percentile(x,84) - np.percentile(x,16)
+    # y = (np.median(x)-np.percentile(x,16))**2
+    # y += (np.median(x)-np.percentile(x,84))**2
+    # y = np.sqrt(y)
+    return y
+
+def plot_scatter(x, y, color, output_name, linetype):
+
+    num_min_per_bin = 5
+    bins = np.arange(-4, 2, 0.25)
+    ind = np.digitize(x, bins)
+    ym = [func_scatter(y[ind == i]) for i in range(1, len(bins)) if len(x[ind == i]) > num_min_per_bin]
+    xm = [np.median(x[ind == i]) for i in range(1, len(bins)) if len(x[ind == i]) > num_min_per_bin]
+    plt.plot(xm, ym, linetype, lw=1.5, color=color, label=output_name, zorder=100)

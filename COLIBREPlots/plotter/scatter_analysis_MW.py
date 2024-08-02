@@ -10,10 +10,45 @@ import scipy.stats as stat
 from simulation.simulation_data import read_simulation
 from simulation import particle_data
 from simulation.halo_catalogue import calculate_morphology
-from .util import plot_median_relation
+from .util import plot_median_relation, plot_median_relation_one_sigma, plot_scatter
 import h5py
 from simulation.utilities import constants
 from .abundance_ratios import plot_APOGEE
+from .observations import (plot_APOGEE_scatter, plot_GALAH, plot_MW_data, plot_MW_scatter,
+                           plot_Pristine, plot_Pristine_scatter, plot_MW_scatter, plot_APOGEE_scatter)
+
+def read_MW_scatter_in_abundances(sim_info, element_list):
+
+    filename = "./outputs/MWGalaxies_stellar_abundances_" + sim_info.simulation_name + ".hdf5"
+    with h5py.File(filename, "r") as file:
+        HaloIndx = file["Data/HostHaloID"][:]
+        x = file["Data/"+element_list[0]][:]
+        y = file["Data/"+element_list[1]][:]
+
+    unique_HaloIndx = np.unique(HaloIndx)
+    num_sample = len(unique_HaloIndx)
+
+    sig_x = np.zeros(num_sample)
+    sig_y = np.zeros(num_sample)
+    for i in range(num_sample):
+
+        select = np.where(HaloIndx == unique_HaloIndx[i])[0]
+        Fe_H = x[select]
+        low_Z = np.where((Fe_H >= -2) & (Fe_H <= -1))[0]
+        sig_y[i] = np.std(y[select[low_Z]])
+        sig_x[i] = np.std(x[select[low_Z]])
+
+    return x, y, sig_x, sig_y
+
+
+def plot_error_bar(i, x, color, id_name):
+
+    err = np.zeros((2, 1))
+    err[0, 0] = np.median(x) - np.percentile(x, 16)
+    err[1, 0] = np.percentile(x, 84) - np.median(x)
+    plt.errorbar(np.array([i]), np.array(np.median(x)), yerr=err, marker='o',
+                 markersize=6, color=color, markeredgecolor="white", markeredgewidth=0.5,
+                 ls='none', lw=1.5, label=id_name, zorder=100)
 
 def calculate_MW_abundances(sim_info):
 
@@ -53,8 +88,6 @@ def calculate_MW_abundances(sim_info):
         Fe_H = np.append(Fe_H, data["Fe_H"][bound_particles_only])
 
     return Fe_H, Mg_Fe, gradius, zcoord
-
-
 
 def plot_histogram(x, radius, z, color, label):
 
@@ -113,7 +146,6 @@ def plot_contours(x, y, xmin, xmax, ymin, ymax):
 
     print(grid_min, grid_max, binsize, levels)
     plt.contour(10**xbins, ybins, z, levels=levels, linewidths=1, cmap="plasma", zorder=1000)
-
 
 def plot_scatter_MW_with_radius(config_parameters):
 
@@ -263,7 +295,6 @@ def plot_scatter_MW_with_radius(config_parameters):
 
     plt.savefig(config_parameters.output_directory + "MW_radial_Scatter.png", dpi=300)
 
-
 def plot_stellar_distribution(config_parameters):
 
     for i in range(config_parameters.number_of_inputs):
@@ -272,7 +303,7 @@ def plot_stellar_distribution(config_parameters):
         Fe_H, Mg_Fe, galactocentric_radius, z = calculate_MW_abundances(sim_info)
 
 
-# Plot parameters
+    # Plot parameters
     params = {
         "font.size": 11,
         "font.family": "Times",
@@ -411,16 +442,18 @@ def plot_stellar_distribution(config_parameters):
 #
 #     plt.savefig("APOGEE_stellar_distribution.png",dpi=300)
 
-
 def read_MW_abundances(sim_info, element_list):
 
     filename = "./outputs/MWGalaxies_stellar_abundances_" + sim_info.simulation_name + ".hdf5"
     with h5py.File(filename, "r") as file:
-        # HaloIndx = file["Data/HostHaloID"][:]
         x = file["Data/"+element_list[0]][:]
         y = file["Data/"+element_list[1]][:]
+        R = file["Data/GalactocentricRadius"][:]
+        z = file["Data/GalactocentricZ"][:]
 
-    return x, y
+        select = np.where((R<100) & (np.abs(z)<10))[0]
+
+    return x[select], y[select]
 
 def plot_abundance_ratio_MgFe(config_parameters):
 
@@ -482,3 +515,103 @@ def plot_abundance_ratio_MgFe(config_parameters):
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
 
     plt.savefig(config_parameters.output_directory + "Scatter_abundance_ratio_MgFe.png", dpi=300)
+
+
+def plot_scatter_of_MW(config_parameters):
+
+    color_list = ['steelblue', 'lightskyblue', 'y', 'salmon']
+
+    # Plot parameters
+    params = {
+        "font.size": 11,
+        "font.family": "Times",
+        "text.usetex": True,
+        "figure.figsize": (5.5, 2.5),
+        "figure.subplot.left": 0.11,
+        "figure.subplot.right": 0.98,
+        "figure.subplot.bottom": 0.16,
+        "figure.subplot.top": 0.85,
+        "lines.markersize": 0.5,
+        "lines.linewidth": 0.2,
+        "figure.subplot.wspace": 0.25,
+        "figure.subplot.hspace": 0.25,
+    }
+    rcParams.update(params)
+    plt.figure()
+    ax = plt.subplot(1, 2, 1)
+    plt.grid(linestyle='-', linewidth=0.3)
+
+    plot_MW_data('Mg')
+    plot_Pristine()
+    for i in range(config_parameters.number_of_inputs):
+        sim_info = read_simulation(config_parameters, i)
+        Fe_H, Mg_Fe = read_MW_abundances(sim_info, ("Fe_H", "Mg_Fe"))
+        plot_median_relation_one_sigma(Fe_H, Mg_Fe, color_list[i], sim_info.simulation_name)
+
+    plt.axis([-4, 1, -1.5, 1])
+    xticks = np.array([-4, -3, -2, -1, 0, 1])
+    labels = ["$-4$", "$-3$", "$-2$", "$-1$", "$0$", "$1$"]
+    plt.xticks(xticks, labels)
+
+    plt.ylabel("[Mg/Fe]")
+    plt.xlabel("[Fe/H]")
+    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+
+    lines = ax.get_lines()
+    legend1 = plt.legend([lines[i] for i in [5, 9, 13, 17]],
+                         ["No diffusion", "Low diffusion", "Default diffusion", "High diffusion"],
+                         loc=[0.0, 1.08],
+                         labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+                         frameon=False, fontsize=9, ncol=4, columnspacing=1.2)
+    ax.add_artist(legend1)
+
+    legend2 = plt.legend([lines[i] for i in [0, 1]],
+                         ["MW-data compilation", "Pristine Survey"],
+                         loc=[0.0, 1.01], labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+                         frameon=False, fontsize=9, ncol=2, columnspacing=1.2)
+    ax.add_artist(legend2)
+
+    #########################
+    ax = plt.subplot(1, 2, 2)
+    plt.grid(linestyle='-', linewidth=0.3)
+
+    plot_Pristine_scatter()
+    plot_MW_scatter()
+    plot_APOGEE_scatter()
+    for i in range(config_parameters.number_of_inputs):
+
+        sim_info = read_simulation(config_parameters, i)
+        Fe_H, Mg_Fe = read_MW_abundances(sim_info, ("Fe_H", "Mg_Fe"))
+        plot_scatter(Fe_H, Mg_Fe, color_list[i], sim_info.simulation_name,'-')
+
+        # sim_info = read_simulation(config_parameters, i)
+        # Fe_H, Mg_Fe, sig_Fe, sig_Mg = read_MW_scatter_in_abundances(sim_info,("Fe_H","Mg_Fe"))
+        # _, O_Fe, _, sig_O = read_MW_scatter_in_abundances(sim_info,("Fe_H","O_Fe"))
+        #
+        # plot_error_bar(1 + delta, sig_Mg, color_list[i], None)
+        # plot_error_bar(2 + delta, sig_O, color_list[i], None)
+        # delta += 0.01
+
+    # plot_APOGEE_scatter(("Fe_H","Mg_Fe"),True)
+    # plot_APOGEE_scatter(("Fe_H","O_Fe"), False)
+    # plot_MW_scatter("Mg",True)
+    # plot_MW_scatter("O",False)
+
+    plt.axis([-4, 1, 0, 1])
+    xticks = np.array([-4, -3, -2, -1, 0, 1])
+    labels = ["$-4$", "$-3$", "$-2$", "$-1$", "$0$", "$1$"]
+    plt.xticks(xticks, labels)
+    plt.xlabel("[Fe/H]")
+    plt.ylabel("Scatter [Mg/Fe] (84th-16th)")
+    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+
+    lines = ax.get_lines()
+    legend1 = plt.legend([lines[i] for i in [2]],
+                         ["APOGEE survey"],
+                         loc=[-0.15, 1.01],
+                         labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+                         frameon=False, fontsize=9, ncol=4, columnspacing=1.2)
+    ax.add_artist(legend1)
+
+
+    plt.savefig(config_parameters.output_directory + "Scatter_MW.png", dpi=300)

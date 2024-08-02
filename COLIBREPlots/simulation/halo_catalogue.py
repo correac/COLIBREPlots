@@ -257,6 +257,21 @@ class SOAP:
         Fe_over_H_Sun = 10 ** (Fe_H_Sun_Asplund - 12.)
         self.Fe_over_H = lin_Fe_over_H_times_star_mass / mass_star_50_kpc.to("Msun").value[mask] / Fe_over_H_Sun
 
+        # Magnesium & Iron mass in stars
+        Mass_Mg = catalogue.get_quantity(f"element_masses_in_stars.magnesium_mass_50_kpc").value[mask]
+        Mass_Fe = catalogue.get_quantity(f"element_masses_in_stars.iron_mass_50_kpc").value[mask]
+
+        # Avoid zeroes
+        mask_Mg = np.logical_and(Mass_Fe > 0.0, Mass_Mg > 0.0)
+
+        # Floor value for the field below
+        floor_value = -5
+
+        X_Mg_to_X_Fe_solar = 0.55
+        Mg_over_Fe = floor_value * np.ones_like(Mass_Fe)
+        Mg_over_Fe[mask_Mg] = np.log10(Mass_Mg[mask_Mg] / Mass_Fe[mask_Mg]) - np.log10(X_Mg_to_X_Fe_solar)
+        self.log_Mg_over_Fe = Mg_over_Fe
+
         # Ids of haloes satisfying the selection criterion
         self.halo_ids = np.array([i for i in range(len(mask)) if mask[i] == True])
 

@@ -4,6 +4,7 @@ from simulation.utilities import constants
 import matplotlib.pylab as plt
 import pandas as pd
 import scipy.stats as stats
+from .util import func_scatter
 
 def make_hist(x, y, cut, xi, yi):
 
@@ -126,6 +127,9 @@ def plot_contours(GalR, Galz, x, y):
 def plot_APOGEE(args):
 
     GalR, Galz, x, y = read_APOGEE(args)
+
+    select = np.where((x>-0.1)&(x<0.1))[0]
+    print(np.median(x[select]),np.median(y[select]))
     plot_contours(GalR, Galz, x, y)
 
 def plot_APOGEE_scatter(args, with_label):
@@ -426,24 +430,24 @@ def plot_observations_Kirby_2010():
 def load_MW_data_with_Mg_Fe():
     # file = './plotter/Observational_data/MW.txt'
     # data = np.loadtxt(file)
-    # FeH_mw = data[:, 0]
-    # MgFe_mw = data[:, 1]
+    # FeH = data[:, 0]
+    # MgFe = data[:, 1]
 
     file = './plotter/Observational_data/Venn_2004_MW_compilation.txt'
     data = np.loadtxt(file, usecols=(1,2,3))
     FeH = data[:,0]
     MgFe = data[:,1]
 
-    #compute COLIBRE standard ratios
-    Mg_over_Fe = constants.Mg_H_Sun_Asplund - constants.Fe_H_Sun_Asplund
+    # #compute COLIBRE standard ratios
+    # Mg_over_Fe = constants.Mg_H_Sun_Asplund - constants.Fe_H_Sun_Asplund
+    #
+    # # tabulate/compute the same ratios from Anders & Grevesse (1989)
+    # Fe_over_H_AG89 = 7.67
+    # Mg_over_H_AG89 = 7.58
+    # Mg_over_Fe_AG89 = Mg_over_H_AG89 - Fe_over_H_AG89
 
-    # tabulate/compute the same ratios from Anders & Grevesse (1989)
-    Fe_over_H_AG89 = 7.67
-    Mg_over_H_AG89 = 7.58
-    Mg_over_Fe_AG89 = Mg_over_H_AG89 - Fe_over_H_AG89
-
-    FeH = FeH + Fe_over_H_AG89 - constants.Fe_H_Sun_Asplund
-    MgFe = MgFe + Mg_over_Fe_AG89 - Mg_over_Fe
+    # FeH = FeH + Fe_over_H_AG89 - constants.Fe_H_Sun_Asplund
+    # MgFe = MgFe + Mg_over_Fe_AG89 - Mg_over_Fe
 
     return FeH, MgFe
 
@@ -534,7 +538,7 @@ def plot_MW_data(element):
         # Load MW data:
         FeH_MW, MgFe_MW = load_MW_data_with_Mg_Fe()
         plt.plot(FeH_MW, MgFe_MW, 'D', ms=2, markeredgewidth=0.2,
-                 color='lightgrey', markeredgecolor='black', label='MW', zorder=0)
+                 color='lightgrey', markeredgecolor='black', label='MW-data compilation (Venn et al. 2004)', zorder=0)
 
 
 def load_satellites_data_Mg_Fe():
@@ -844,3 +848,159 @@ def plot_SAGA():
     plt.errorbar(M_star, Z_median, yerr=y_scatter, color='grey',
                  markeredgecolor='black', markeredgewidth=0.2,
                  marker='*', markersize=6, linestyle='none', lw=1, label='Geha et al. (2024)')
+
+def plot_Pristine():
+
+    input_filename = "./plotter/Observational_data/Pristine_survey.txt"
+    raw = np.loadtxt(input_filename, usecols=[1, 10])
+    FeH = raw[:,0]
+    MgH = raw[:,1]
+    plt.plot(FeH, MgH, 'x', ms=5, mew=0.3, color='grey', label='Pristine Survey')
+
+def plot_Pristine_scatter():
+
+    input_filename = "./plotter/Observational_data/Pristine_survey.txt"
+    raw = np.loadtxt(input_filename, usecols=[1, 10])
+    FeH = raw[:,0]
+    MgFe = raw[:,1]
+
+    num_min_per_bin = 5
+    bins = np.arange(-3, 2, 0.25)
+    ind = np.digitize(FeH, bins)
+    ym = [func_scatter(MgFe[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xm = [np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    plt.plot(xm, ym, 'x', ms=5, mew=0.3, color='black', label='Pristine Survey')
+
+
+def plot_MW_scatter():
+
+    FeH, MgFe = load_MW_data_with_Mg_Fe()
+
+    num_min_per_bin = 5
+    bins = np.arange(-3, 2, 0.25)
+    ind = np.digitize(FeH, bins)
+    ym = [func_scatter(MgFe[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xm = [np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    plt.plot(xm, ym, 'D', markeredgecolor='black', markerfacecolor='lightgrey',
+             ms=2, markeredgewidth=0.2, label='MW-data compilation (Venn et al. 2004)', zorder=0)
+
+def plot_APOGEE_scatter():
+
+    input_filename = "./plotter/Observational_data/APOGEE_data.hdf5"
+    apogee_dataset = h5py.File(input_filename, "r")
+    FE_H = apogee_dataset["FE_H"][:]
+    MG_FE = apogee_dataset["MG_FE"][:]
+    Mg_Fe_Asplund = constants.Mg_H_Sun_Asplund - constants.Fe_H_Sun_Asplund
+    correction = constants.Mg_over_Fe_Grevesse07 - Mg_Fe_Asplund
+    MG_FE += correction
+
+    num_min_per_bin = 5
+    bins = np.arange(-3, 2, 0.25)
+    ind = np.digitize(FE_H, bins)
+    ym = [func_scatter(MG_FE[ind == i]) for i in range(1, len(bins)) if len(FE_H[ind == i]) > num_min_per_bin]
+    xm = [np.median(FE_H[ind == i]) for i in range(1, len(bins)) if len(FE_H[ind == i]) > num_min_per_bin]
+    plt.plot(xm, ym, 'o', markeredgecolor='black', markerfacecolor='lightgrey',
+             ms=3, markeredgewidth=0.2, label='APOGEE survey', zorder=0)
+
+def plot_Gallazzi_2021():
+
+    raw = np.loadtxt("./plotter/Observational_data/gallazzi_2021_ascii.txt")
+    h_sim = 0.6777
+    M_star = 10 ** raw[:, 0] * h_sim ** -2
+
+    # Correction factor due to the difference in (X_O/X_Fe)_Sun
+    # From Grevesse + (1991) to Asplund+ (2009)
+
+    O_over_H_Gr91 = 8.91
+
+    # We don't take the Fe_over_H_Gr91 value of 7.67 from Grevesse + (1991), which was used
+    # in Gallazzi et al. (2021) because we are confident that that value wasn't correct
+    # and instead we need to use a more recent value, which is defined in the following.
+    # line. We are currently waiting for a confirmation from Gallazzi that we should indeed
+    # use 7.48, as opposed to 7.67.
+    Fe_over_H_Gr91 = 7.48
+
+    Mg_over_H_Gr91 = 7.58
+
+    Fe_over_H_Asplund09 = 7.50
+    Mg_over_H_Asplund09 = 7.6
+
+    Mg_over_Fe_solar_Gr91 = Mg_over_H_Gr91 - Fe_over_H_Gr91
+    Mg_over_Fe_solar_Asplund09 = Mg_over_H_Asplund09 - Fe_over_H_Asplund09
+
+    correction = Mg_over_Fe_solar_Gr91 - Mg_over_Fe_solar_Asplund09
+
+    Z_median = (raw[:, 1] + correction)
+    Z_lo = (raw[:, 2] + correction)
+    Z_hi = (raw[:, 3] + correction)
+
+    # Define the scatter as offset from the mean value
+    y_scatter = np.array((Z_median - Z_lo, Z_hi - Z_median))
+
+    plt.errorbar(M_star, Z_median, yerr=y_scatter, color='grey',
+                 markeredgecolor='black', markeredgewidth=0.2,
+                 marker='*', markersize=6, linestyle='none', lw=1, label='Gallazzi et al. (2021)')
+
+
+def plot_Romero_Gomez_2023():
+
+    # Read the data. Here the linear fit is taken from
+    # Romero Gomez et al. (2023); Table C2; first row
+    raw = np.arange(8, 12.25, 0.25)
+    M_star = 10 ** raw
+    Z_star = 0.04 * raw - 0.28
+    error_Z_star = 0.01 * raw + 0.09
+
+    # Correction factor due to the difference in (X_O/X_Fe)_Sun
+    # From Grevesse & Sauval (1998) to Asplund+ (2009)
+    # Note: Romero-Gomez et al. (2023) re-analyze the spectra of
+    # each ATLAS-3D galaxy using the MILES/Vazdekis stellar templates library.
+    # MILES adopts the stellar libraries of Coelho et al. (2005), who
+    # assume the solar abundances of Grevesse & Sauval (1998).
+    # For more details see Vazdekis et al. (2015) (https://arxiv.org/pdf/1504.08032.pdf)
+
+    Mg_H_Grevesse98 = 7.58
+    Fe_H_Grevesse98 = 7.50
+    Mg_Fe_Grevesse98 = Mg_H_Grevesse98 - Fe_H_Grevesse98
+    Fe_over_H_Asplund09 = 7.50
+    Mg_over_H_Asplund09 = 7.6
+    Mg_over_Fe_Asplund09 = Mg_over_H_Asplund09 - Fe_over_H_Asplund09
+
+    element_list = np.array(["MgFe", "OFe"])
+
+    correction = Mg_Fe_Grevesse98 - Mg_over_Fe_Asplund09
+
+    Z_median = (Z_star + correction)
+    Z_lo = (Z_star - error_Z_star + correction)
+    Z_hi = (Z_star + error_Z_star + correction)
+
+    # Define the scatter as offset from the mean value
+    y_scatter = np.array((Z_median - Z_lo, Z_hi - Z_median))
+
+    plt.errorbar(M_star, Z_median, yerr=y_scatter, color='indigo',
+                 markeredgecolor='black', markeredgewidth=0.2,
+                 marker='o', markersize=4, linestyle='none', lw=1, label='Romero-Gomez et al. (2023) (ATLAS-3D)')
+
+def plot_Romero_Gomez_2023_dwarfs():
+
+    input_filename = "./plotter/Observational_data/RomeroGomez_2023_ascii.txt"
+    delimiter = " "
+
+    # Read the data
+    raw = np.loadtxt(input_filename, usecols=[1, 2, 3], skiprows=6)
+    M_star = 10 ** raw[:, 2]
+    select = np.where(raw[:, 2] > 0)[0]  # Some missing data
+    M_star = M_star[select]
+    alpha_Fe = raw[select, 0]
+    error_alpha_Fe = raw[select, 1]
+
+    Z_median = alpha_Fe
+    Z_lo = (alpha_Fe - error_alpha_Fe)
+    Z_hi = (alpha_Fe + error_alpha_Fe)
+
+    # Define the scatter as offset from the mean value
+    y_scatter = np.array((Z_median - Z_lo, Z_hi - Z_median))
+
+    plt.errorbar(M_star, Z_median, yerr=y_scatter, color='purple',
+                 markeredgecolor='black', markeredgewidth=0.2,
+                 marker='v', markersize=4, linestyle='none', lw=1, label='Romero-Gomez et al. (2023)  (LG dwarfs)')
