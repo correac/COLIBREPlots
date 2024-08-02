@@ -38,12 +38,25 @@ def calculate_MW_abundances(sim_info):
 
         halo_indx = sim_info.halo_data.halo_index[sample[i]]
         part_data = particle_data.load_particle_data(sim_info, sample[i])
-        bound_particles_only = part_data.select_bound_particles(sim_info, halo_indx, part_data.stars.ids)
         galaxy_stellar_mass = sim_info.halo_data.log10_stellar_mass[sample[i]]
 
-        mass = part_data.stars.masses.value[bound_particles_only]
-        pos = part_data.stars.coordinates.value[bound_particles_only, :] * 1e3 # kpc
-        vel = part_data.stars.velocities.value[bound_particles_only]
+        if sim_info.catalogue_particles is not None:
+            bound_particles_only = part_data.select_bound_particles(sim_info, halo_indx, part_data.stars.ids)
+
+            mass = part_data.stars.masses.value[bound_particles_only]
+            pos = part_data.stars.coordinates.value[bound_particles_only, :] * 1e3 # kpc
+            vel = part_data.stars.velocities.value[bound_particles_only]
+
+        else:
+            # Assume bound particles are those within a 50 kpc aperture
+            pos = part_data.stars.coordinates.value[:, :] * 1e3 # kpc
+            radius = np.sqrt(np.sum(pos ** 2, axis=1))
+            bound_particles_only = np.where(radius <= 50)[0]
+
+            mass = part_data.stars.masses.value[bound_particles_only]
+            pos = pos[bound_particles_only, :]
+            vel = part_data.stars.velocities.value[bound_particles_only]
+
 
         kappa, momentum = calculate_morphology(pos, vel, mass)
         gradius, zcoord = part_data.calculate_galactocentric_radius(momentum, pos)

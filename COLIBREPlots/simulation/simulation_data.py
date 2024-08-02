@@ -182,7 +182,8 @@ class SimInfo:
         if len(catalogue_groups_paths) == 1:
             self.catalogue_groups = catalogue_groups_paths[0].split("/")[-1]
         else:
-            raise IOError("Couldn't find catalogue_groups file")
+            self.catalogue_groups = None
+            print("Couldn't find catalogue_groups file")
 
         # We expect two files: one for bound and the other for unbound particles
         if len(catalogue_particles_paths) == 2:
@@ -190,7 +191,8 @@ class SimInfo:
                 if path.find("unbound") == -1:
                     self.catalogue_particles = path.split("/")[-1]
         else:
-            raise IOError("Couldn't find catalogue_particles file")
+            self.catalogue_particles = None
+            print("Couldn't find catalogue_particles file")
 
         return
 

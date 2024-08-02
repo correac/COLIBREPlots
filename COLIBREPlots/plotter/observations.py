@@ -977,7 +977,7 @@ def plot_Romero_Gomez_2023():
     # Define the scatter as offset from the mean value
     y_scatter = np.array((Z_median - Z_lo, Z_hi - Z_median))
 
-    plt.errorbar(M_star, Z_median, yerr=y_scatter, color='indigo',
+    plt.errorbar(M_star, Z_median, yerr=y_scatter, color='lightgrey',
                  markeredgecolor='black', markeredgewidth=0.2,
                  marker='o', markersize=4, linestyle='none', lw=1, label='Romero-Gomez et al. (2023) (ATLAS-3D)')
 
@@ -1001,6 +1001,6 @@ def plot_Romero_Gomez_2023_dwarfs():
     # Define the scatter as offset from the mean value
     y_scatter = np.array((Z_median - Z_lo, Z_hi - Z_median))
 
-    plt.errorbar(M_star, Z_median, yerr=y_scatter, color='purple',
+    plt.errorbar(M_star, Z_median, yerr=y_scatter, color='lightgrey',
                  markeredgecolor='black', markeredgewidth=0.2,
                  marker='v', markersize=4, linestyle='none', lw=1, label='Romero-Gomez et al. (2023)  (LG dwarfs)')

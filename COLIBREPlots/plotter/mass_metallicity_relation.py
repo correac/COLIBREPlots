@@ -271,7 +271,7 @@ def plot_MgFe_mass_relation(config_parameters):
 
     color_list = ['steelblue','darkblue', 'y', 'salmon']
     option = [1, 0, 0, 1] # 1 yes, 0 no
-    option_min_mass = [6, 0, 6, 0]
+    option_min_mass = [7.8, 0, 7.8  , 0]
     option_max_mass = [0, 0, 0, 0]
 
     # Plot parameters
@@ -309,7 +309,7 @@ def plot_MgFe_mass_relation(config_parameters):
                                        min_mass=option_min_mass[i],
                                        max_mass=option_max_mass[i])
 
-    plt.axis([5e7, 5e12, -0.4, 0.7])
+    plt.axis([5e7, 5e12, -0.5, 0.7])
     plt.xscale('log')
     plt.xlabel("$M_{*}$ [M$_{\odot}$]")
     plt.ylabel("[Mg/Fe]")
@@ -328,7 +328,7 @@ def plot_MgFe_mass_relation(config_parameters):
     for i in range(config_parameters.number_of_inputs):
         ax2.plot([], [], lw=2, color=color_list[i], label=simulation_list[i])
 
-    ax2.legend(loc=[0.7, 0.05], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+    ax2.legend(loc=[0.7, 0.02], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
                frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=11, columnspacing=1,
                numpoints=1)
 
