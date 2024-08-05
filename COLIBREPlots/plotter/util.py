@@ -37,7 +37,10 @@ def plot_median_relation_one_sigma(x, y, color, output_name):
     plt.plot(xm, yhi, '-', lw=0.3, color=color, zorder=100)
     plt.fill_between(xm, ylo, yhi, color=color, alpha=0.3, edgecolor=None, zorder=0)
     plt.plot(xm, ym, '-', lw=2.5, color='white', zorder=100)
-    plt.plot(xm, ym, '-', lw=1.5, color=color, label=output_name, zorder=100)
+    if output_name is not None:
+        plt.plot(xm, ym, '-', lw=1.5, color=color, label=output_name, zorder=100)
+    else:
+        plt.plot(xm, ym, '-', lw=1.5, color=color, zorder=100)
 
 def func_scatter(x):
 

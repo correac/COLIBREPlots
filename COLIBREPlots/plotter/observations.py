@@ -90,7 +90,7 @@ def read_APOGEE(args):
 
     return GalR, Galz, data[args[0]], data[args[1]]
 
-def plot_contours(GalR, Galz, x, y):
+def plot_contours(GalR, Galz, x, y, cmap):
 
     xmin = -3
     xmax = 1
@@ -121,16 +121,13 @@ def plot_contours(GalR, Galz, x, y):
     levels = np.arange(grid_min, grid_max, binsize)
     levels = 10 ** levels
 
-    contour = plt.contour(xbins, ybins, z, levels=levels, linewidths=0.5, cmap="turbo", zorder=0)
+    contour = plt.contour(xbins, ybins, z, levels=levels, linewidths=0.5, cmap=cmap, zorder=0)
     contour.collections[0].set_label('APOGEE data')
 
 def plot_APOGEE(args):
 
     GalR, Galz, x, y = read_APOGEE(args)
-
-    select = np.where((x>-0.1)&(x<0.1))[0]
-    print(np.median(x[select]),np.median(y[select]))
-    plot_contours(GalR, Galz, x, y)
+    plot_contours(GalR, Galz, x, y, "turbo")
 
 def plot_APOGEE_scatter(args, with_label):
 
@@ -1004,3 +1001,70 @@ def plot_Romero_Gomez_2023_dwarfs():
     plt.errorbar(M_star, Z_median, yerr=y_scatter, color='lightgrey',
                  markeredgecolor='black', markeredgewidth=0.2,
                  marker='v', markersize=4, linestyle='none', lw=1, label='Romero-Gomez et al. (2023)  (LG dwarfs)')
+
+def plot_APOGEE_black(args):
+
+    GalR, Galz, x, y = read_APOGEE(args)
+    plot_contours(GalR, Galz, x, y, "bone")
+
+def plot_Hayden():
+
+    # Read the data
+    input_filename = "./plotter/Observational_data/HaydenPawson_2022b.txt"
+
+    raw = np.loadtxt(input_filename)
+    logOH_median = raw[:, 0] # 12 + log(O/H)
+    logNO_median = raw[:, 1] # log(N/O)
+    logNO_lo = raw[:, 2] # log(N/O)
+    logNO_hi = raw[:, 3] # log(N/O)
+
+    # Define the scatter as offset from the mean value
+    y_scatter = np.array((logNO_median - logNO_lo, logNO_hi - logNO_median))
+    plt.errorbar(logOH_median, logNO_median, yerr=y_scatter, color='lightgrey',
+                 markeredgecolor='black', markeredgewidth=0.2,
+                 marker='v', markersize=4, linestyle='none', lw=1,
+                 label='Hayden-Pawson et al. (2022)')
+
+
+def plot_Nicolls(option):
+
+    input_filename = "./plotter/Observational_data/Nicholls_2017.txt"
+
+    # Read the data
+    raw = np.loadtxt(input_filename)
+    logOH = raw[:, 0]  # 12 + log(O/H)
+    logCO = raw[:, 1]  # log(C/O)
+    logNO = raw[:, 2]  # log(N/O)
+
+    if option == "NO":
+        plt.plot(logOH, logNO, color='lightgrey',
+                 markeredgecolor='black', markeredgewidth=0.2,
+                 marker='v', markersize=4, linestyle='none', lw=1,
+                 label='Nicolls et al. (2017)')
+
+    if option == "CO":
+        plt.plot(logOH, logCO, color='lightgrey',
+                 markeredgecolor='black', markeredgewidth=0.2,
+                 marker='v', markersize=4, linestyle='none', lw=1,
+                 label='Nicolls et al. (2017)')
+
+
+
+def plot_Berg():
+    input_filename = "./plotter/Observational_data/Berg_2020.txt"
+
+
+    # Read the data
+    raw = np.loadtxt(input_filename, usecols=(1, 2, 3, 4), delimiter=",")
+    logOH_mean = raw[:, 0] # log(O/H)+12
+    logOH_std = raw[:, 1] # log(O/H)+12
+    logNO_mean = raw[:, 2] # log(N/O)
+    logNO_std = raw[:, 3] # log(N/O)
+
+    # Define the scatter as offset from the mean value
+    x_scatter = np.array(logOH_std)
+    y_scatter = np.array(logNO_std)
+
+    plt.errorbar(logOH_mean, logNO_mean, yerr=y_scatter, xerr=x_scatter, color='lightgrey',
+                 markeredgecolor='black', markeredgewidth=0.2,
+                 marker='v', markersize=4, linestyle='none', lw=1, label='Berg et al. (2020)')

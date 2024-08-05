@@ -523,7 +523,7 @@ def plot_scatter_of_MW(config_parameters):
 
     # Plot parameters
     params = {
-        "font.size": 11,
+        "font.size": 9,
         "font.family": "Times",
         "text.usetex": True,
         "figure.figsize": (5.5, 2.5),

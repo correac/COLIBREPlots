@@ -248,7 +248,47 @@ class SOAP:
         self.log10_O_H_gas_diffuse_plus_twelve = np.where(
             np.isnan(self.log10_O_H_gas_diffuse_plus_twelve), -1, self.log10_O_H_gas_diffuse_plus_twelve)
 
-        del colddense_mass, O_over_H_total_times_gas_mass,  O_over_H_diffuse_times_gas_mass
+        del O_over_H_total_times_gas_mass,  O_over_H_diffuse_times_gas_mass
+
+        N_over_O_total_times_gas_mass = catalogue.get_quantity(
+            "lin_element_ratios_times_masses.lin_N_over_O_total_times_gas_mass_50_kpc"
+        ).to("Msun").value[mask]
+
+        N_over_O_diffuse_times_gas_mass = catalogue.get_quantity(
+            "lin_element_ratios_times_masses.lin_N_over_O_times_gas_mass_50_kpc"
+            ).to("Msun").value[mask]
+
+        self.log10_N_O_gas_total = np.log10(
+            N_over_O_total_times_gas_mass / colddense_mass)
+        self.log10_N_O_gas_total = np.where(
+            np.isnan(self.log10_N_O_gas_total), -1, self.log10_N_O_gas_total)
+
+        self.log10_N_O_gas_diffuse = np.log10(
+            N_over_O_diffuse_times_gas_mass / colddense_mass)
+        self.log10_N_O_gas_diffuse = np.where(
+            np.isnan(self.log10_N_O_gas_diffuse), -1, self.log10_N_O_gas_diffuse)
+
+        del N_over_O_total_times_gas_mass,  N_over_O_diffuse_times_gas_mass
+
+        C_over_O_total_times_gas_mass = catalogue.get_quantity(
+            "lin_element_ratios_times_masses.lin_C_over_O_total_times_gas_mass_50_kpc"
+        ).to("Msun").value[mask]
+
+        C_over_O_diffuse_times_gas_mass = catalogue.get_quantity(
+            "lin_element_ratios_times_masses.lin_C_over_O_times_gas_mass_50_kpc"
+            ).to("Msun").value[mask]
+
+        self.log10_C_O_gas_total = np.log10(
+            C_over_O_total_times_gas_mass / colddense_mass)
+        self.log10_C_O_gas_total = np.where(
+            np.isnan(self.log10_C_O_gas_total), -1, self.log10_C_O_gas_total)
+
+        self.log10_C_O_gas_diffuse = np.log10(
+            C_over_O_diffuse_times_gas_mass / colddense_mass)
+        self.log10_C_O_gas_diffuse = np.where(
+            np.isnan(self.llog10_C_O_gas_diffuse), -1, self.log10_C_O_gas_diffuse)
+
+        del colddense_mass, C_over_O_total_times_gas_mass,  C_over_O_diffuse_times_gas_mass
 
         lin_Fe_over_H_times_star_mass = catalogue.get_quantity(
             f"lin_element_ratios_times_masses.lin_Fe_over_H_times_star_mass_50_kpc"

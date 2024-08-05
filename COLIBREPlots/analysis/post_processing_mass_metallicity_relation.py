@@ -58,23 +58,35 @@ def calculate_galaxies_abundances(sim_info):
     #select_sample = np.where(sim_info.halo_data.log10_stellar_mass >= 8)[0]
     #select_centrals = np.where(sim_info.halo_data.type[select_sample] == 10)[0]
     #sample = select_sample[select_centrals]
-    sample = np.where(sim_info.halo_data.type == 10)[0]
+    # sample = np.where(sim_info.halo_data.type == 10)[0]
 
-    Z = sim_info.halo_data.metallicity[sample]
-    halo_indx_list = sim_info.halo_data.halo_index[sample]
-    galaxy_stellar_mass = sim_info.halo_data.log10_stellar_mass[sample]
-    galaxy_sfr = sim_info.halo_data.sfr[sample]
+    Z = sim_info.halo_data.metallicity
+    halo_indx_list = sim_info.halo_data.halo_index
+    galaxy_stellar_mass = sim_info.halo_data.log10_stellar_mass
+    galaxy_sfr = sim_info.halo_data.sfr
+    halo_type = sim_info.halo_data.type
 
-    if sim_info.soap_name is None:
-        Fe_H, O_H_gas_total, O_H_gas_diffused = calculate_abundances_from_particles(sim_info, sample)
-    else:
-        Fe_H = sim_info.halo_data.Fe_over_H[sample]
-        O_H_gas_total = sim_info.halo_data.log10_O_H_gas_total_plus_twelve[sample]
-        O_H_gas_diffused = sim_info.halo_data.log10_O_H_gas_diffuse_plus_twelve[sample]
+    # if sim_info.soap_name is None:
+    #     Fe_H, O_H_gas_total, O_H_gas_diffused = calculate_abundances_from_particles(sim_info, sample)
+    # else:
+
+    # Stellar
+    Fe_H = sim_info.halo_data.Fe_over_H
+    Mg_Fe = sim_info.halo_data.log_Mg_over_Fe
+    # Gas
+    O_H_gas_total = sim_info.halo_data.log10_O_H_gas_total_plus_twelve
+    O_H_gas_diffused = sim_info.halo_data.log10_O_H_gas_diffuse_plus_twelve
+    N_O_gas_total = sim_info.halo_data.log10_N_O_gas_total
+    N_O_gas_diffused = sim_info.halo_data.log10_N_O_gas_diffuse
+    C_O_gas_total = sim_info.halo_data.log10_C_O_gas_total
+    C_O_gas_diffused = sim_info.halo_data.log10_C_O_gas_diffuse
 
 
-    return {"Fe_H":Fe_H, "O_H_gas_total":O_H_gas_total, "O_H_gas_diffused":O_H_gas_diffused,
-            "halo_index":halo_indx_list, "Z":Z, "galaxylogMs": galaxy_stellar_mass, "galaxySFR": galaxy_sfr}
+    return {"halo_type":halo_type, "Fe_H":Fe_H, "O_H_gas_total":O_H_gas_total, "O_H_gas_diffused":O_H_gas_diffused,
+            "N_O_gas_total": N_O_gas_total, "N_O_gas_diffused": N_O_gas_diffused,
+            "C_O_gas_total": C_O_gas_total, "C_O_gas_diffused": C_O_gas_diffused,
+            "halo_index":halo_indx_list, "Z":Z, "galaxylogMs": galaxy_stellar_mass,
+            "galaxySFR": galaxy_sfr, "Mg_Fe":Mg_Fe}
 
 
 def make_post_processing_galaxies_metallicities(config_parameters):
@@ -89,12 +101,18 @@ def make_post_processing_galaxies_metallicities(config_parameters):
         data_file = h5py.File(output_file, 'w')
         f = data_file.create_group('Data')
         f.create_dataset('HaloID', data=data["halo_index"])
+        f.create_dataset('HaloType', data=data["halo_type"])
         f.create_dataset('GalaxylogMstellar', data=data["galaxylogMs"])
         f.create_dataset('GalaxySFR', data=data["galaxySFR"])
         f.create_dataset('Metallicity', data=data["Z"])
         f.create_dataset('O_H_gas_total', data=data["O_H_gas_total"])
         f.create_dataset('O_H_gas_diffused', data=data["O_H_gas_diffused"])
+        f.create_dataset('N_O_gas_total', data=data["N_O_gas_total"])
+        f.create_dataset('N_O_gas_diffused', data=data["N_O_gas_diffused"])
+        f.create_dataset('C_O_gas_total', data=data["C_O_gas_total"])
+        f.create_dataset('C_O_gas_diffused', data=data["C_O_gas_diffused"])
         f.create_dataset('Fe_H', data=data["Fe_H"])
+        f.create_dataset('Mg_Fe', data=data["Mg_Fe"])
         data_file.close()
 
 def calculate_alpha_enhancement_from_particles(sim_info, sample):

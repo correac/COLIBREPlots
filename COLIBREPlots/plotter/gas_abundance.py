@@ -7,6 +7,25 @@ import numpy as np
 import h5py
 from simulation.simulation_data import read_simulation
 from simulation.utilities import constants
+from .observations import plot_Hayden, plot_Nicolls, plot_Berg
+
+def plot_median_relation_one_sigma(x, y, color, output_name):
+    num_min_per_bin = 5
+    bins = np.arange(7, 10, 0.25)
+    ind = np.digitize(x, bins)
+    ylo = [np.percentile(y[ind == i], 16) for i in range(1, len(bins)) if len(x[ind == i]) > num_min_per_bin]
+    yhi = [np.percentile(y[ind == i], 84) for i in range(1, len(bins)) if len(x[ind == i]) > num_min_per_bin]
+    ym = [np.median(y[ind == i]) for i in range(1, len(bins)) if len(x[ind == i]) > num_min_per_bin]
+    xm = [np.median(x[ind == i]) for i in range(1, len(bins)) if len(x[ind == i]) > num_min_per_bin]
+    plt.plot(xm, ylo, '-', lw=0.3, color=color, zorder=100)
+    plt.plot(xm, yhi, '-', lw=0.3, color=color, zorder=100)
+    plt.fill_between(xm, ylo, yhi, color=color, alpha=0.3, edgecolor=None, zorder=0)
+    plt.plot(xm, ym, '-', lw=2.5, color='white', zorder=100)
+    if output_name is not None:
+        plt.plot(xm, ym, '-', lw=1.5, color=color, label=output_name, zorder=100)
+    else:
+        plt.plot(xm, ym, '-', lw=1.5, color=color, zorder=100)
+
 
 def plot_ArellanoCordova2020():
     # Arellano+ adopt the solar 12+log(O/H) of 8.73±0.04 as recommended by Lodders (2019).
@@ -146,3 +165,110 @@ def plot_gas_abundance_gradient(config_parameters):
     plt.legend(loc=[0,0.01], labelspacing=0.05, handlelength=0.5, handletextpad=0.05,
                frameon=False, fontsize=10, ncol=1, columnspacing=0.1)
     plt.savefig(config_parameters.output_directory + "gas_abundance_gradient_comparison.png", dpi=300)
+
+def plot_gas_CNO(data, color, simulation_name, option):
+
+    # GalR = data["GalR"]
+    # Galz = data["GalZ"]
+    # HaloIndex = data["HaloIndex"]
+    # kappa = data["kappa"]
+    Oxygen = data["O"]
+    Carbon = data["C"]
+    Hydrogen = data["H"]
+    Nitrogen = data["N"]
+    mass = data["mass"]
+    temperature = data["temperature"]
+    nh = data["density"]
+
+    gas_is_cold_dense = np.where((temperature < 10**4.5) & (nh > 0.1))[0]
+
+    gas_mass = mass[gas_is_cold_dense]
+    gas_O_over_H = Oxygen[gas_is_cold_dense] * constants.mH_in_cgs
+    gas_O_over_H /= (constants.mO_in_cgs * Hydrogen[gas_is_cold_dense])
+    #gas_O_over_H = gas_O_over_H * gas_mass
+    #gas_O_over_H = np.sum(gas_O_over_H)
+    #gas_mass = np.sum(gas_mass)
+    # log_O_over_H = np.log10(gas_O_over_H.value / gas_mass) + 12.
+    log_O_over_H = np.log10(gas_O_over_H.value) + 12.
+
+    if option == "NO":
+        gas_N_over_O = Nitrogen[gas_is_cold_dense] * constants.mO_in_cgs
+        gas_N_over_O /= (constants.mN_in_cgs * Oxygen[gas_is_cold_dense])
+        # gas_N_over_O = gas_N_over_O * gas_mass
+        # gas_N_over_O = np.sum(gas_N_over_O)
+        # gas_mass = np.sum(gas_mass)
+        # log_N_over_O = np.log10(gas_N_over_O.value / gas_mass)
+        log_N_over_O = np.log10(gas_N_over_O.value)
+
+        plt.plot(log_O_over_H, log_N_over_O, 'o')
+        plot_median_relation_one_sigma(log_O_over_H, log_N_over_O, color, simulation_name)
+
+    if option == "CO":
+
+        gas_C_over_O = Carbon[gas_is_cold_dense] * constants.mO_in_cgs
+        gas_C_over_O /= (constants.mC_in_cgs * Oxygen[gas_is_cold_dense])
+        # gas_C_over_O = gas_C_over_O * gas_mass
+        # gas_C_over_O = np.sum(gas_C_over_O)
+        # gas_mass = np.sum(gas_mass)
+        # log_C_over_O = np.log10(gas_C_over_O.value / gas_mass)
+        log_C_over_O = np.log10(gas_C_over_O.value)
+
+        plt.plot(log_O_over_H, log_C_over_O, 'o')
+        plot_median_relation_one_sigma(log_O_over_H, log_C_over_O, color, simulation_name)
+
+def plot_cno_relations(config_parameters):
+
+    color_list = ['steelblue']
+    i = 0
+    sim_info = read_simulation(config_parameters, i)
+    data = read_galactic_abundances(sim_info)
+
+    # Plot parameters
+    params = {
+        "font.size": 10,
+        "font.family": "Times",
+        "text.usetex": True,
+        "figure.figsize": (6, 2.5),
+        "figure.subplot.left": 0.14,
+        "figure.subplot.right": 0.95,
+        "figure.subplot.bottom": 0.16,
+        "figure.subplot.top": 0.95,
+        "lines.markersize": 0.5,
+        "lines.linewidth": 0.2,
+        "figure.subplot.wspace": 0.4,
+        "figure.subplot.hspace": 0.05,
+    }
+    rcParams.update(params)
+    plt.figure()
+    ax = plt.subplot(1, 2, 1)
+    plt.grid(linestyle='-', linewidth=0.3)
+
+    plot_Hayden()
+    plot_Nicolls('NO')
+    plot_Berg()
+    plot_gas_CNO(data, color_list[i], sim_info.simulation_name, "NO")
+
+    plt.axis([7, 10, -2, 0.5])
+    plt.ylabel("Gas (Dust+Diffuse) $\log_{10}$(N/O)")
+    plt.xlabel("Gas (Dust+Diffuse) 12+$\log_{10}$(O/H)")
+    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    plt.legend(loc=[0,0.01], labelspacing=0.05, handlelength=0.5, handletextpad=0.05,
+               frameon=False, fontsize=10, ncol=1, columnspacing=0.1)
+
+    ####
+
+    ax = plt.subplot(1, 2, 2)
+    plt.grid(linestyle='-', linewidth=0.3)
+
+    plot_Nicolls('CO')
+    plot_gas_CNO(data, color_list[i], sim_info.simulation_name, "CO")
+
+    plt.axis([7, 10, -2, 1.0])
+    plt.ylabel("Gas (Dust+Diffuse) $\log_{10}$(C/O)")
+    plt.xlabel("Gas (Dust+Diffuse) 12+$\log_{10}$(O/H)")
+    ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
+    plt.legend(loc=[0,0.01], labelspacing=0.05, handlelength=0.5, handletextpad=0.05,
+               frameon=False, fontsize=10, ncol=1, columnspacing=0.1)
+
+
+    plt.savefig(config_parameters.output_directory + "gas_abundance_cno.png", dpi=300)
