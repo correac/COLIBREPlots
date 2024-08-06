@@ -286,7 +286,7 @@ class SOAP:
         self.log10_C_O_gas_diffuse = np.log10(
             C_over_O_diffuse_times_gas_mass / colddense_mass)
         self.log10_C_O_gas_diffuse = np.where(
-            np.isnan(self.llog10_C_O_gas_diffuse), -1, self.log10_C_O_gas_diffuse)
+            np.isnan(self.log10_C_O_gas_diffuse), -1, self.log10_C_O_gas_diffuse)
 
         del colddense_mass, C_over_O_total_times_gas_mass,  C_over_O_diffuse_times_gas_mass
 
