@@ -214,9 +214,7 @@ class SOAP:
         self.half_mass_radius_gas = catalogue.get_quantity("radii.r_halfmass_gas").to("kpc").value[mask]
 
         # Star formation rate in units of Msun/yr
-        self.sfr = (
-                catalogue.get_quantity("apertures.sfr_gas_50_kpc").value[mask] * 10227144.8879616 / 1e9
-        )
+        self.sfr = catalogue.get_quantity("apertures.sfr_gas_50_kpc").to("Msun/yr").value[mask]
 
         # Metallicity of star-forming gas
         self.metallicity_gas_sfr = catalogue.get_quantity("apertures.zmet_gas_sf_50_kpc").value[mask]

@@ -6,10 +6,10 @@ from matplotlib.pylab import rcParams
 import numpy as np
 import h5py
 from simulation.simulation_data import read_simulation
-from .util import plot_median_relation, plot_median_relation_one_sigma
+from .util import plot_median_relation, plot_median_relation_one_sigma, plot_median_relation_one_sigma_option
 from .observations import (plot_APOGEE, plot_GALAH, plot_Sit2024, plot_StrontiumObsData,
                           plot_data_Zepeda2022, plot_data_Gudin2021, plot_data_Norfolk2019,
-                           plot_APOGEE_black)
+                           plot_APOGEE_black, plot_mean_yields)
 
 
 def read_galactic_abundances(sim_info):
@@ -500,6 +500,7 @@ def plot_abundance_ratios_sr_processes_single_run(config_parameters):
 def plot_abundance_ratios_MgFe(config_parameters):
 
     color_list = ['steelblue','darkblue', 'y', 'salmon']
+    option = [1, 0, 0, 1]
 
     # Plot parameters
     params = {
@@ -526,8 +527,9 @@ def plot_abundance_ratios_MgFe(config_parameters):
     for i in range(config_parameters.number_of_inputs):
         sim_info = read_simulation(config_parameters, i)
         data = read_galactic_abundances(sim_info)
-        plot_median_relation_one_sigma(data["Fe_H"], data["Mg_Fe"], color_list[i], None)
+        plot_median_relation_one_sigma_option(data["Fe_H"], data["Mg_Fe"], color_list[i], None, option[i])
 
+    # plot_mean_yields()
     plt.axis([-4, 1, -1, 1])
     plt.xlabel("[Fe/H]")
     plt.ylabel("[Mg/Fe]")
@@ -535,18 +537,23 @@ def plot_abundance_ratios_MgFe(config_parameters):
 
     ax3 = ax.twinx()
     ax3.axis('off')
-    ax3.plot([], [], lw=1, color='black', label="APOGEE data")
-    ax3.legend(loc=[0.02, 0.02], ncol=1, labelspacing=0.02, handlelength=0.5, handletextpad=0.1,
+    simulation_list = ["L050N752","L025N752","L025N376","L012N376"]
+    for i in range(config_parameters.number_of_inputs):
+        ax3.plot([], [], lw=2, color=color_list[i], label=simulation_list[i])
+
+    ax3.legend(loc=[0.02, 0.0], ncol=1, labelspacing=0.02, handlelength=0.5, handletextpad=0.1,
                frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=11, columnspacing=1,
                numpoints=1)
 
     ax2 = ax.twinx()
     ax2.axis('off')
-    simulation_list = ["L050N752","L025N752","L025N376","L012N376"]
-    for i in range(config_parameters.number_of_inputs):
-        ax2.plot([], [], lw=2, color=color_list[i], label=simulation_list[i])
+    ax2.plot([], [], lw=1, color='black', label="APOGEE data")
+    # ax2.plot([], [], '-.', lw=2, color='turquoise', label=r"IMF-weighted [Mg/Fe]$_{\mathrm{CCSN}}$")
+    # simulation_list = ["L050N752","L025N752","L025N376","L012N376"]
+    # for i in range(config_parameters.number_of_inputs):
+    #     ax2.plot([], [], lw=2, color=color_list[i], label=simulation_list[i])
 
-    ax2.legend(loc=[0.4, 0.02], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+    ax2.legend(loc=[0.35, 0.0], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
                frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=11, columnspacing=1,
                numpoints=1)
 

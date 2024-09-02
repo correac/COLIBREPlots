@@ -15,7 +15,7 @@ from analysis.post_processing_MW_abundances import make_post_processing_MW
 from analysis.post_processing_satellite_abundances import make_post_processing_satellites
 #from analysis.post_processing_pie_charts import make_post_processing_MW_for_abundance_contribution
 from plotter.pie_charts import plot_pie_charts
-# from plotter.gas_abundance import plot_cno_relations
+from plotter.gas_abundance import plot_cno_relations
 from analysis.post_processing_mass_metallicity_relation import make_post_processing_galaxies_metallicities
 from plotter.mass_metallicity_relation import plot_mass_metallicity_relation, plot_MgFe_mass_relation
 from analysis.post_processing_mass_metallicity_relation import make_post_processing_galaxies_MgFe
@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     # make_post_processing_galaxies_MgFe(config_parameters)
     # plot_MgFe_mass_relation(config_parameters)
-    # plot_abundance_ratios_MgFe(config_parameters)
+    plot_abundance_ratios_MgFe(config_parameters)
 
-    make_post_processing_galaxies_metallicities(config_parameters)
+    # make_post_processing_galaxies_metallicities(config_parameters)
     # plot_mass_metallicity_relation(config_parameters)

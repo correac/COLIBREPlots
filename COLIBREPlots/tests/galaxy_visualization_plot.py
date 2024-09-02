@@ -154,11 +154,12 @@ def stars_light_map_face_on(ax, file_path, filename):
     stars_map, region = get_projection_map(model, npix, size, rotation='False')
     ax.imshow(stars_map, extent=region, interpolation='nearest')
 
+    ax.invert_xaxis()
     ax.tick_params(labelleft=False, labelbottom=False)
     ax.set_xticks([])
     ax.set_yticks([])
     ax.set_axis_off()
-    ax.text(0.1, 0.05, 'Stars', horizontalalignment='center', verticalalignment='center',
+    ax.text(0.15, 0.05, 'Stars', horizontalalignment='center', verticalalignment='center',
             transform=ax.transAxes, color='white')
 
 
@@ -178,7 +179,7 @@ def stars_light_map_edge_on(ax, file_path, filename):
     ax.set_xticks([])
     ax.set_yticks([])
     ax.set_axis_off()
-    ax.text(0.1, 0.05, 'Stars', horizontalalignment='center', verticalalignment='center',
+    ax.text(0.15, 0.05, 'Stars', horizontalalignment='center', verticalalignment='center',
             transform=ax.transAxes, color='white')
 
 def gas_map_face_on(ax, file_path, filename):

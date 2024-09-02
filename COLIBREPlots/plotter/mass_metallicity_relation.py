@@ -25,7 +25,7 @@ def plot_median_relation_one_sigma(x, y, color, output_name, with_scatter, min_m
     if min_mass == 0: min_mass = 6
     if max_mass == 0: max_mass =  13
 
-    num_min_per_bin = 10
+    num_min_per_bin = 2
     bins = np.arange(min_mass, max_mass, 0.2)
     bins = 10**bins
     ind = np.digitize(x, bins)
@@ -260,19 +260,22 @@ def plot_mass_metallicity_relation(config_parameters):
 
 def read_MgFe_data(sim_info):
 
-    filename = "./outputs/Galaxies_MgFe_mass_relation_" + sim_info.simulation_name + ".hdf5"
+    filename = "./outputs/Galaxies_mass_metallicity_relation_" + sim_info.simulation_name + ".hdf5"
+    # filename = "./outputs/Galaxies_MgFe_mass_relation_" + sim_info.simulation_name + ".hdf5"
     with h5py.File(filename, "r") as file:
         MgFe = file["Data/Mg_Fe"][:]
         Mstellar = file["Data/GalaxylogMstellar"][:]
+        GalaxyType = file["Data/HaloType"][:]
 
-    return {"MgFe": MgFe, "Mstellar": 10**Mstellar}
+    centrals = np.where(GalaxyType == 10)[0]
+    return {"MgFe": MgFe[centrals], "Mstellar": 10**Mstellar[centrals]}
 
 def plot_MgFe_mass_relation(config_parameters):
 
     color_list = ['steelblue','darkblue', 'y', 'salmon']
     option = [1, 0, 0, 1] # 1 yes, 0 no
     option_min_mass = [7.8, 0, 7.8  , 0]
-    option_max_mass = [0, 0, 0, 0]
+    option_max_mass = [0, 0, 0, 8.5]
 
     # Plot parameters
     params = {

@@ -1020,9 +1020,9 @@ def plot_Hayden():
 
     # Define the scatter as offset from the mean value
     y_scatter = np.array((logNO_median - logNO_lo, logNO_hi - logNO_median))
-    plt.errorbar(logOH_median, logNO_median, yerr=y_scatter, color='lightgrey',
+    plt.errorbar(logOH_median, logNO_median, yerr=y_scatter, color='lightblue',
                  markeredgecolor='black', markeredgewidth=0.2,
-                 marker='v', markersize=4, linestyle='none', lw=1,
+                 marker='o', markersize=4, linestyle='none', lw=0.5,
                  label='Hayden-Pawson et al. (2022)')
 
 
@@ -1037,15 +1037,11 @@ def plot_Nicolls(option):
     logNO = raw[:, 2]  # log(N/O)
 
     if option == "NO":
-        plt.plot(logOH, logNO, color='lightgrey',
-                 markeredgecolor='black', markeredgewidth=0.2,
-                 marker='v', markersize=4, linestyle='none', lw=1,
+        plt.plot(logOH, logNO, '-', color='purple', lw=2,
                  label='Nicolls et al. (2017)')
 
     if option == "CO":
-        plt.plot(logOH, logCO, color='lightgrey',
-                 markeredgecolor='black', markeredgewidth=0.2,
-                 marker='v', markersize=4, linestyle='none', lw=1,
+        plt.plot(logOH, logCO, '-', color='purple', lw=2,
                  label='Nicolls et al. (2017)')
 
 
@@ -1067,4 +1063,13 @@ def plot_Berg():
 
     plt.errorbar(logOH_mean, logNO_mean, yerr=y_scatter, xerr=x_scatter, color='lightgrey',
                  markeredgecolor='black', markeredgewidth=0.2,
-                 marker='v', markersize=4, linestyle='none', lw=1, label='Berg et al. (2020)')
+                 marker='v', markersize=4, linestyle='none', lw=0.5, label='Berg et al. (2020)')
+
+def plot_mean_yields():
+
+    input_filename = "./outputs/Mean_CCSN_yields.hdf5"
+    with h5py.File(input_filename, "r") as file:
+        FeH = file["FeH"][:]
+        ratios = file["MgFe"][:]
+
+    plt.plot(FeH, ratios, '-.',lw=2, color='turquoise', zorder=1000)
