@@ -11,7 +11,7 @@ from swiftsimio.visualisation.projection import project_gas
 from swiftsimio.visualisation.rotation import rotation_matrix_from_vector
 from swiftsimio import load, mask
 
-from swiftascmaps import evermore, evermore_r, red_tv, red_tv_r, reputation, midnights
+#from swiftascmaps import evermore, evermore_r, red_tv, red_tv_r, reputation, midnights
 from astropy.visualization import make_lupton_rgb
 
 def get_projection_map(model, npix, size, rotation):

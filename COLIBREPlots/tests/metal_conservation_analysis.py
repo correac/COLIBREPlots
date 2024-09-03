@@ -90,7 +90,7 @@ def total_metal_evolution(ax, file_path, snap, color, label):
 if __name__ == "__main__":
 
     initial_snap = 0
-    final_snap = 5
+    final_snap = 195
     # for i in range(initial_snap, 1):
 
     # file_path = "/Users/cc276407/Simulation_data/cosma/IsolatedGalaxy/IsolatedGalaxy_halfbox/"
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     #####
     ax0 = plt.subplot(3, 4, 5)
 
-    file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfbox_nocooling/"
+    file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ_nocooling/"
     filename = "output_0%003d.hdf5" % final_snap
     total_metal_evolution(ax0, file_path, final_snap, 'darkblue', '$C_{\mathrm{diff}}=0.01$')
 
@@ -150,21 +150,21 @@ if __name__ == "__main__":
     filename = "output_0%003d.hdf5" % final_snap
     total_metal_evolution(ax0, file_path, final_snap, 'salmon', '$C_{\mathrm{diff}}=1$')
 
-    file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ_nocooling_C1_same_timestep/"
-    filename = "output_0%003d.hdf5" % 8
-    total_metal_evolution(ax0, file_path, final_snap, 'darkred', '$C_{\mathrm{diff}}=1$ (*)')
+    #mid_snap = 9
+    #file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ_nocooling_C1_same_timestep/"
+    #total_metal_evolution(ax0, file_path, mid_snap, 'darkred', '$C_{\mathrm{diff}}=1$ (*)')
 
     ax0.set_xlim(0,2)
-    ax0.set_ylim(-800,50)
+    ax0.set_ylim(-800,200)
 
-    plt.legend(loc=[0.38, 0.75], labelspacing=0.05, handlelength=0.7, handletextpad=0.1,
+    plt.legend(loc=[0.42, 0.75], labelspacing=0.05, handlelength=0.7, handletextpad=0.1,
                frameon=False, fontsize=12, ncol=1, columnspacing=0.5)
 
     #####
     ax0 = plt.subplot(3, 4, 6)
 
     # Let's plot here initial conditions
-    file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfbox_nocooling/"
+    file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ_nocooling/"
     filename = "output_0%003d.hdf5" % initial_snap
     _ = metallicity_distribution_plot(ax0, file_path, filename, "Initial distribution")
 
@@ -178,7 +178,7 @@ if __name__ == "__main__":
     #####
     ax2 = plt.subplot(3, 4, 8)
 
-    file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ_nocooling/"
+    file_path = "/cosma7/data/dp004/dc-corr1/SIMULATION_RUNS/COLIBRE_05_2024/IsolatedGalaxy/IsolatedGalaxy_halfboxZ_nocooling_C1/"
     filename = "output_0%003d.hdf5" % final_snap
     im = metallicity_distribution_plot(ax2, file_path, filename, '$C_{\mathrm{diff}}=1$')
     axlist = [ax0, ax1, ax2]
