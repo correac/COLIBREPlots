@@ -7,8 +7,7 @@ import numpy as np
 import h5py
 import scipy.stats as stat
 from simulation.simulation_data import read_simulation
-from .observations import (plot_APOGEE_scatter, plot_GALAH, plot_MW_data, plot_MW_scatter,
-                           plot_satellites, plot_observations_Kirby_2010, plot_observations_Mead_2024)
+from .observations import (plot_satellites, plot_observations_Kirby_2010, plot_observations_Mead_2024)
 from .util import plot_median_relation_one_sigma
 
 def read_MW_abundances(sim_info, element_list):
@@ -128,7 +127,7 @@ def plot_scatter_of_MW_satellites(config_parameters):
     ax = plt.subplot(2, 3, 1)
     plt.grid(linestyle='-', linewidth=0.3)
 
-    plot_MW_data('Mg')
+    # plot_MW_data('Mg')
     for i in range(config_parameters.number_of_inputs):
         sim_info = read_simulation(config_parameters, i)
         Fe_H, Mg_Fe = read_MW_abundances(sim_info, ("Fe_H", "Mg_Fe"))
@@ -220,10 +219,10 @@ def plot_scatter_of_MW_satellites(config_parameters):
         plot_error_bar(2 + delta, sig_O, color_list[i], None)
         delta += 0.01
 
-    plot_APOGEE_scatter(("Fe_H","Mg_Fe"),True)
-    plot_APOGEE_scatter(("Fe_H","O_Fe"), False)
-    plot_MW_scatter("Mg",True)
-    plot_MW_scatter("O",False)
+    # plot_APOGEE_scatter(("Fe_H","Mg_Fe"),True)
+    # plot_APOGEE_scatter(("Fe_H","O_Fe"), False)
+    # plot_MW_scatter("Mg",True)
+    # plot_MW_scatter("O",False)
 
     plt.axis([0, 3, 0, 1])
     xticks = np.array([1, 2])

@@ -6,6 +6,7 @@ import matplotlib
 from matplotlib.pylab import rcParams
 import numpy as np
 import h5py
+from scipy import interpolate
 from simulation.simulation_data import read_simulation
 from simulation.utilities.constants import Zsolar
 from .observations import (plot_Zahid2017, plot_gallazi, plot_Kudritzki,
@@ -26,7 +27,7 @@ def plot_median_relation_one_sigma(x, y, color, output_name, with_scatter, min_m
     if max_mass == 0: max_mass =  13
 
     num_min_per_bin = 2
-    bins = np.arange(min_mass, max_mass, 0.2)
+    bins = np.arange(min_mass, max_mass, 0.25)
     bins = 10**bins
     ind = np.digitize(x, bins)
     ylo = [np.percentile(y[ind == i], 16) for i in range(1, len(bins)) if len(x[ind == i]) > num_min_per_bin]
@@ -41,6 +42,10 @@ def plot_median_relation_one_sigma(x, y, color, output_name, with_scatter, min_m
 
     plt.plot(xm, ym, '-', lw=2.5, color='white', zorder=10000)
     plt.plot(xm, ym, '-', lw=1.5, color=color, zorder=10000)
+
+    for i in range(len(xm)):print(np.log10(xm[i]), ym[i], ym[i]-ylo[i], yhi[i]-ym[i])
+    f = interpolate.interp1d(xm, ym)
+    print('1e10',f(1e10))
 
 def read_data(sim_info):
 
@@ -61,7 +66,7 @@ def plot_mass_metallicity_relation(config_parameters):
     color_list = ['steelblue','darkblue', 'y', 'salmon']
     # color_list = ['darkblue', 'steelblue', 'y', 'salmon']
     option = [1, 0, 0, 1] # 1 yes, 0 no
-    option_min_mass = [7.8, 0, 7.8, 0]
+    option_min_mass = [7.8, 7.8, 7.8, 7.8]
     option_max_mass = [0, 0, 0, 0]
 
     # Plot parameters
@@ -88,8 +93,10 @@ def plot_mass_metallicity_relation(config_parameters):
     plot_gallazi()
     plot_Kudritzki()
     plot_Yates()
-    plot_Kirby()
+    # plot_Kirby()
     plot_Panter_2018()
+
+    print('Total metallicity')
 
     for i in range(config_parameters.number_of_inputs):
 
@@ -102,28 +109,28 @@ def plot_mass_metallicity_relation(config_parameters):
                                        min_mass=option_min_mass[i],
                                        max_mass=option_max_mass[i])
 
-    plt.axis([1e6, 1e12, 1e-2, 5])
+    plt.axis([1e7, 1e12, 5e-2, 5])
     plt.xscale('log')
     plt.yscale('log')
     plt.xlabel("$M_{*}$ [M$_{\odot}$]")
     plt.ylabel("$Z_{*}$ [Z$_{\odot}$]")
-    plt.yticks([1e-2, 1e-1, 1, 5], ['$10^{-2}$', '$10^{-1}$', '1','5'])
-    plt.xticks([1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12],
-               ['$10^{6}$', '$10^{7}$', '$10^{8}$','$10^{9}$','$10^{10}$','$10^{11}$','$10^{12}$'])
+    # plt.yticks([1e-2, 1e-1, 1, 5], ['$10^{-2}$', '$10^{-1}$', '1','5'])
+    # plt.xticks([1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12],
+    #            ['$10^{6}$', '$10^{7}$', '$10^{8}$','$10^{9}$','$10^{10}$','$10^{11}$','$10^{12}$'])
     locmin = matplotlib.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=12)
     ax.xaxis.set_minor_locator(locmin)
     ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.legend(loc=[0.01,0.59],labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+    plt.legend(loc=[0.01,0.64],labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
                frameon=False, fontsize=11, ncol=1, columnspacing=0.23)
 
     ax2 = ax.twinx()
     ax2.axis('off')
-    simulation_list = ["L050N752","L025N752","L025N376","L012N376"]
+    simulation_list = ["No diffusion","Low diffusion","Default diffusion","High diffusion"]
     for i in range(config_parameters.number_of_inputs):
         ax2.plot([], [], lw=2, color=color_list[i], label=simulation_list[i])
 
-    ax2.legend(loc=[0.7, 0.05], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+    ax2.legend(loc=[0.2, 0.02], ncol=2, labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
                frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=11, columnspacing=1,
                numpoints=1)
 
@@ -139,8 +146,10 @@ def plot_mass_metallicity_relation(config_parameters):
     plot_gallazi()
     plot_Kudritzki()
     plot_Yates()
-    plot_Kirby()
+    # plot_Kirby()
     plot_Panter_2018()
+
+    print('[FeH] relation')
 
     for i in range(config_parameters.number_of_inputs):
 
@@ -153,14 +162,14 @@ def plot_mass_metallicity_relation(config_parameters):
                                        min_mass=option_min_mass[i],
                                        max_mass=option_max_mass[i])
 
-    plt.axis([1e6, 1e12, 1e-2, 5])
+    plt.axis([1e7, 1e12, 5e-2, 5])
     plt.xscale('log')
     plt.yscale('log')
     plt.xlabel("$M_{*}$ [M$_{\odot}$]")
     plt.ylabel("Stellar (Fe/H) [in units of (Fe/H)$_{\odot}$]")
-    plt.yticks([1e-2, 1e-1, 1, 5], ['$10^{-2}$', '$10^{-1}$', '1','5'])
-    plt.xticks([1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12],
-               ['$10^{6}$', '$10^{7}$', '$10^{8}$','$10^{9}$','$10^{10}$','$10^{11}$','$10^{12}$'])
+    # plt.yticks([1e-2, 1e-1, 1, 5], ['$10^{-2}$', '$10^{-1}$', '1','5'])
+    # plt.xticks([1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12],
+    #            ['$10^{6}$', '$10^{7}$', '$10^{8}$','$10^{9}$','$10^{10}$','$10^{11}$','$10^{12}$'])
     locmin = matplotlib.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=12)
     ax.xaxis.set_minor_locator(locmin)
     ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
@@ -182,6 +191,9 @@ def plot_mass_metallicity_relation(config_parameters):
     plot_Curti()
     plot_SAGA()
 
+    print('OH_diffused')
+
+
     for i in range(config_parameters.number_of_inputs):
 
         sim_info = read_simulation(config_parameters, i)
@@ -193,13 +205,13 @@ def plot_mass_metallicity_relation(config_parameters):
                                        min_mass=option_min_mass[i],
                                        max_mass=option_max_mass[i])
 
-    plt.axis([1e6, 1e12, 7, 9.5])
+    plt.axis([1e7, 1e12, 7.5, 9.5])
     plt.xscale('log')
     plt.xlabel("$M_{*}$ [M$_{\odot}$]")
     plt.ylabel("$12+\log_{10}$(O/H) (Diffuse)")
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.xticks([1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12],
-               ['$10^{6}$', '$10^{7}$', '$10^{8}$', '$10^{9}$', '$10^{10}$', '$10^{11}$', '$10^{12}$'])
+    # plt.xticks([1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12],
+    #            ['$10^{6}$', '$10^{7}$', '$10^{8}$', '$10^{9}$', '$10^{10}$', '$10^{11}$', '$10^{12}$'])
     locmin = matplotlib.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=12)
     ax.xaxis.set_minor_locator(locmin)
     ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
@@ -208,11 +220,12 @@ def plot_mass_metallicity_relation(config_parameters):
 
     ax2 = ax.twinx()
     ax2.axis('off')
-    simulation_list = ["L050N752","L025N752","L025N376","L012N376"]
+    # simulation_list = ["L050N752","L025N752","L025N376","L012N376"]
+    simulation_list = ["No diffusion","Low diffusion","Default diffusion","High diffusion"]
     for i in range(config_parameters.number_of_inputs):
         ax2.plot([], [], lw=2, color=color_list[i], label=simulation_list[i])
 
-    ax2.legend(loc=[0.7, 0.05], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+    ax2.legend(loc=[0.2, 0.02], ncol=2, labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
                frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=11, columnspacing=1,
                numpoints=1)
 
@@ -230,6 +243,8 @@ def plot_mass_metallicity_relation(config_parameters):
     plot_Curti()
     plot_SAGA()
 
+    print("OH total")
+
     for i in range(config_parameters.number_of_inputs):
 
         sim_info = read_simulation(config_parameters, i)
@@ -241,12 +256,12 @@ def plot_mass_metallicity_relation(config_parameters):
                                        min_mass=option_min_mass[i],
                                        max_mass=option_max_mass[i])
 
-    plt.axis([1e6, 1e12, 7, 9.5])
+    plt.axis([1e7, 1e12, 7.5, 9.5])
     plt.xscale('log')
     plt.xlabel("$M_{*}$ [M$_{\odot}$]")
     plt.ylabel("$12+\log_{10}$(O/H) (Dust + Diffuse)")
-    plt.xticks([1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12],
-               ['$10^{6}$', '$10^{7}$', '$10^{8}$', '$10^{9}$', '$10^{10}$', '$10^{11}$', '$10^{12}$'])
+    # plt.xticks([1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12],
+    #            ['$10^{6}$', '$10^{7}$', '$10^{8}$', '$10^{9}$', '$10^{10}$', '$10^{11}$', '$10^{12}$'])
 
     locmin = matplotlib.ticker.LogLocator(base=10.0, subs=(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9), numticks=12)
     ax.xaxis.set_minor_locator(locmin)

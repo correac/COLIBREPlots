@@ -8,6 +8,10 @@ import h5py
 from simulation.simulation_data import read_simulation
 from simulation.utilities import constants
 from .observations import plot_Hayden, plot_Nicolls, plot_Berg
+from scipy.optimize import curve_fit
+
+def func(x,a,b):
+    return a + b * x
 
 def plot_median_relation_one_sigma(x, y, color, output_name, line_type):
     num_min_per_bin = 5
@@ -17,14 +21,14 @@ def plot_median_relation_one_sigma(x, y, color, output_name, line_type):
     yhi = [np.percentile(y[ind == i], 84) for i in range(1, len(bins)) if len(x[ind == i]) > num_min_per_bin]
     ym = [np.median(y[ind == i]) for i in range(1, len(bins)) if len(x[ind == i]) > num_min_per_bin]
     xm = [np.median(x[ind == i]) for i in range(1, len(bins)) if len(x[ind == i]) > num_min_per_bin]
-    plt.plot(xm, ylo, '-', lw=0.3, color=color, zorder=100)
-    plt.plot(xm, yhi, '-', lw=0.3, color=color, zorder=100)
-    plt.fill_between(xm, ylo, yhi, color=color, alpha=0.3, edgecolor=None, zorder=0)
-    plt.plot(xm, ym, '-', lw=2.5, color='white', zorder=100)
+    plt.plot(xm, ylo, '-', lw=0.1, color=color, zorder=100)
+    plt.plot(xm, yhi, '-', lw=0.1, color=color, zorder=100)
+    plt.fill_between(xm, ylo, yhi, color=color, alpha=0.2, edgecolor=None, zorder=0)
+    plt.plot(xm, ym, '-', lw=1.5, color='white', zorder=100)
     if output_name is not None:
-        plt.plot(xm, ym, line_type, lw=1.5, color=color, label=output_name, zorder=100)
+        plt.plot(xm, ym, line_type, lw=1, color=color, label=output_name, zorder=100)
     else:
-        plt.plot(xm, ym, line_type, lw=1.5, color=color, zorder=100)
+        plt.plot(xm, ym, line_type, lw=1, color=color, zorder=100)
 
 
 def plot_ArellanoCordova2020():
@@ -78,7 +82,7 @@ def plot_gas_gradient(data, color, output_name):
     unique_HaloIndx = np.unique(HaloIndex)
     num_sample = len(unique_HaloIndx)
 
-    radial_bins = np.arange(2, 24, 2)
+    radial_bins = np.arange(2, 24, 1)
     num_bins = len(radial_bins)-1
 
     xm = 0.5 * (radial_bins[1:] + radial_bins[:-1])
@@ -87,7 +91,7 @@ def plot_gas_gradient(data, color, output_name):
     yhi = np.zeros(num_bins)
 
     for i in range(num_bins):
-        select_radius = np.where((GalR >= radial_bins[i]) & (GalR < radial_bins[i+1]) & (np.abs(Galz) < 1))[0]
+        select_radius = np.where((GalR >= radial_bins[i]) & (GalR < radial_bins[i+1]) & (np.abs(Galz) < 0.5))[0]
 
         gradient = []
         for j in range(num_sample):
@@ -97,8 +101,9 @@ def plot_gas_gradient(data, color, output_name):
             if len(select_kappa) == 0: continue
 
             select_particles = select_radius[select_halo[select_kappa]]
-            # gas_is_cold_dense = np.where((temperature[select_particles] < 10**4.5) & (nh[select_particles] > 0.1))[0]
-            # if len(gas_is_cold_dense) == 0:continue
+            gas_is_cold_dense = np.where((temperature[select_particles] <= 10**4.5) & (nh[select_particles] >= 0.1))[0]
+            if len(gas_is_cold_dense) == 0:continue
+            select_particles = select_particles[gas_is_cold_dense]
 
             gas_mass = mass[select_particles]
             gas_O_over_H_diffuse = Oxygen[select_particles] * constants.mH_in_cgs
@@ -121,6 +126,14 @@ def plot_gas_gradient(data, color, output_name):
     plt.plot(xm, ym, '-', lw=2.5, color='white', zorder=100)
     plt.plot(xm, ym, '-', lw=1.5, color=color, label=output_name, zorder=100)
 
+    select = np.where((xm>=5) & (xm<=15))[0]
+    xdata = xm[select]
+    ydata = ym[select]
+    popt, pcov = curve_fit(func, xdata, ydata)
+    print(output_name)
+    print("Slope:", popt)
+
+
 
 def plot_gas_abundance_gradient(config_parameters):
 
@@ -131,8 +144,8 @@ def plot_gas_abundance_gradient(config_parameters):
         "font.size": 10,
         "font.family": "Times",
         "text.usetex": True,
-        "figure.figsize": (4, 2.5),
-        "figure.subplot.left": 0.14,
+        "figure.figsize": (3.5, 2.5),
+        "figure.subplot.left": 0.15,
         "figure.subplot.right": 0.95,
         "figure.subplot.bottom": 0.16,
         "figure.subplot.top": 0.95,
@@ -144,7 +157,7 @@ def plot_gas_abundance_gradient(config_parameters):
     rcParams.update(params)
     plt.figure()
     ax = plt.subplot(1, 1, 1)
-    plt.grid(linestyle='-', linewidth=0.3)
+    plt.grid(linestyle='-', linewidth=0.2)
 
     plot_ArellanoCordova2020()
     plt.plot([8.2],[constants.O_H_Sun_Asplund],marker='$\odot$',ms=6, color='black',markeredgewidth=0.01)
@@ -186,6 +199,21 @@ def read_galaxies_metallicity(sim_info):
             "CO_diffused": CO_diffuse, "CO_total": CO_total,
             "Mstellar": 10**Mstellar, "SFR": SFR}
 
+def read_cno_gas(sim_info):
+
+    filename = "./outputs/CNO_gas_abundance_" + sim_info.simulation_name + ".hdf5"
+
+    with h5py.File(filename, "r") as file:
+        NO_diffuse = file["Data/N_O_gas_diffused"][:]
+        NO_total = file["Data/N_O_gas_total"][:]
+        OH_diffuse = file["Data/O_H_gas_diffused"][:]
+        OH_total = file["Data/O_H_gas_total"][:]
+        CO_diffuse = file["Data/C_O_gas_diffused"][:]
+        CO_total = file["Data/C_O_gas_total"][:]
+
+    return {"OH_diffused": OH_diffuse, "OH_total": OH_total,
+            "NO_diffused": NO_diffuse, "NO_total": NO_total,
+            "CO_diffused": CO_diffuse, "CO_total": CO_total}
 
 def plot_gas_CNO(data, color, simulation_name, option):
 
@@ -193,30 +221,33 @@ def plot_gas_CNO(data, color, simulation_name, option):
     Ms = data["Mstellar"]
     select_SFR = np.where(SFR>0)[0]
 
-    if option == "NO":
-        log_O_over_H = data["OH_total"][select_SFR]
-        log_N_over_O = data["NO_total"][select_SFR]
-        plot_median_relation_one_sigma(log_O_over_H, log_N_over_O, color, simulation_name, '-')
+    print(np.min(np.log10(Ms)), np.max(np.log10(Ms)))
+    print(np.min(SFR), np.max(SFR), np.median(SFR), np.mean(SFR))
 
+    if option == "NO":
         log_O_over_H = data["OH_diffused"][select_SFR]
         log_N_over_O = data["NO_diffused"][select_SFR]
         plot_median_relation_one_sigma(log_O_over_H, log_N_over_O, color, simulation_name, '--')
 
-    if option == "CO":
-
         log_O_over_H = data["OH_total"][select_SFR]
-        log_C_over_O = data["CO_total"][select_SFR]
-        plot_median_relation_one_sigma(log_O_over_H, log_C_over_O, color, simulation_name, '-')
+        log_N_over_O = data["NO_total"][select_SFR]
+        plot_median_relation_one_sigma(log_O_over_H, log_N_over_O, color, simulation_name, '-')
+
+    if option == "CO":
 
         log_O_over_H = data["OH_diffused"][select_SFR]
         log_C_over_O = data["CO_diffused"][select_SFR]
         plot_median_relation_one_sigma(log_O_over_H, log_C_over_O, color, simulation_name, '--')
 
+        log_O_over_H = data["OH_total"][select_SFR]
+        log_C_over_O = data["CO_total"][select_SFR]
+        plot_median_relation_one_sigma(log_O_over_H, log_C_over_O, color, simulation_name, '-')
+
 
 def plot_cno_relations(config_parameters):
 
-    # color_list = ['steelblue','darkblue', 'y', 'salmon']
-    color_list = ['darkblue', 'salmon']
+    color_list = ['steelblue','darkblue', 'y', 'salmon']
+    # color_list = ['darkblue', 'salmon']
 
     params = {
         "font.size": 9,
@@ -235,7 +266,7 @@ def plot_cno_relations(config_parameters):
     rcParams.update(params)
     plt.figure()
     ax = plt.subplot(1, 2, 1)
-    plt.grid(linestyle='-', linewidth=0.3)
+    plt.grid(linestyle='-', linewidth=0.2)
 
     plot_Hayden()
     plot_Nicolls('NO')
@@ -243,6 +274,7 @@ def plot_cno_relations(config_parameters):
     for i in range(config_parameters.number_of_inputs):
         sim_info = read_simulation(config_parameters, i)
         data = read_galaxies_metallicity(sim_info)
+        # data = read_cno_gas(sim_info)
         plot_gas_CNO(data, color_list[i], None, "NO")
 
     plt.axis([7, 10, -2, 0.5])
@@ -252,16 +284,28 @@ def plot_cno_relations(config_parameters):
     plt.legend(loc=[0,0.73], labelspacing=0.05, handlelength=0.5, handletextpad=0.05,
                frameon=False, fontsize=9, ncol=1, columnspacing=0.1)
 
+    ax2 = ax.twinx()
+    ax2.axis('off')
+    simulation_list = ["No diffusion","Low diffusion","Default diffusion","High diffusion"]
+    # simulation_list = ["L025N376","L025N752"]
+    for i in range(config_parameters.number_of_inputs):
+        ax2.plot([], [], lw=2, color=color_list[i], label=simulation_list[i])
+
+    ax2.legend(loc=[0.51, 0.0], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+               frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=9, columnspacing=1,
+               numpoints=1)
+
 
     ####
 
     ax = plt.subplot(1, 2, 2)
-    plt.grid(linestyle='-', linewidth=0.3)
+    plt.grid(linestyle='-', linewidth=0.2)
 
     plot_Nicolls('CO')
     for i in range(config_parameters.number_of_inputs):
         sim_info = read_simulation(config_parameters, i)
         data = read_galaxies_metallicity(sim_info)
+        # data = read_cno_gas(sim_info)
         plot_gas_CNO(data, color_list[i], None, "CO")
 
     plt.axis([7, 10, -2, 1.0])
@@ -282,14 +326,15 @@ def plot_cno_relations(config_parameters):
                frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=9, columnspacing=1,
                numpoints=1)
 
-    ax2 = ax.twinx()
-    ax2.axis('off')
-    simulation_list = ["L025N376","L025N752"]
-    for i in range(config_parameters.number_of_inputs):
-        ax2.plot([], [], lw=2, color=color_list[i], label=simulation_list[i])
-
-    ax2.legend(loc=[0.64, 0.03], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
-               frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=9, columnspacing=1,
-               numpoints=1)
+    # ax2 = ax.twinx()
+    # ax2.axis('off')
+    # simulation_list = ["No diffusion","Low diffusion","Default diffusion","High diffusion"]
+    # # simulation_list = ["L025N376","L025N752"]
+    # for i in range(config_parameters.number_of_inputs):
+    #     ax2.plot([], [], lw=2, color=color_list[i], label=simulation_list[i])
+    #
+    # ax2.legend(loc=[0.64, 0.03], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+    #            frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=9, columnspacing=1,
+    #            numpoints=1)
 
     plt.savefig(config_parameters.output_directory + "gas_abundance_cno.png", dpi=300)

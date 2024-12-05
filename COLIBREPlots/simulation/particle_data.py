@@ -272,6 +272,64 @@ class load_gas_particle_data:
         self.iron_diffuse = data.gas.element_mass_fractions_diffuse[:,8].value       # Diffuse
 
 
+class load_all_gas_particle_data:
+    """
+    Class containing particles properties
+    """
+
+    def __init__(
+            self, sim_info, CoP, CoV
+    ):
+        """
+        Parameters
+        ----------
+        """
+
+        # Now load the snapshot with this mask
+        data = sw.load(f"{sim_info.directory}/{sim_info.snapshot_name}")
+
+        self.ids = data.gas.particle_ids.value
+        self.n_parts = len(self.ids)
+
+        self.coordinates = data.gas.coordinates.to("Mpc") * sim_info.a
+        self.coordinates -= CoP * sim_info.a  # centering
+
+        self.velocities = data.gas.velocities.to("km/s") - CoV
+        self.masses = data.gas.masses.to("Msun")
+
+
+class load_dm_particle_data:
+    """
+    Class containing particles properties
+    """
+
+    def __init__(
+            self, sim_info, CoP, CoV, size
+    ):
+        """
+        Parameters
+        ----------
+        """
+        mask = sw.mask(f"{sim_info.directory}/{sim_info.snapshot_name}")
+
+        # region is a 3x2 list [[left, right], [bottom, top], [front, back]]
+        region = [[-0.5 * b + o, 0.5 * b + o] for b, o in zip(size, CoP)]
+
+        # Constrain the mask
+        mask.constrain_spatial(region)
+
+        # Now load the snapshot with this mask
+        data = sw.load(f"{sim_info.directory}/{sim_info.snapshot_name}", mask=mask)
+
+        self.ids = data.dark_matter.particle_ids.value
+        self.n_parts = len(self.ids)
+
+        self.coordinates = data.dark_matter.coordinates.to("Mpc") * sim_info.a
+        self.coordinates -= CoP * sim_info.a  # centering
+
+        self.velocities = data.dark_matter.velocities.to("km/s") - CoV
+        self.masses = data.dark_matter.masses.to("Msun")
+
 class load_particle_data:
     """
     Class containing particles properties
@@ -304,6 +362,7 @@ class load_particle_data:
 
         self.gas = load_gas_particle_data(sim_info, CoP, CoV, size)
 
+        self.dm = load_dm_particle_data(sim_info, CoP, CoV, size)
 
     def select_bound_particles(self, sim_info, halo_index, ids):
         """
@@ -348,4 +407,34 @@ class load_particle_data:
         radius = np.sqrt(x**2 + y**2)
 
         return radius, z
+
+class load_particle_data_all:
+    """
+    Class containing particles properties
+    """
+
+    def __init__(
+            self, sim_info, index,
+    ):
+        """
+        Parameters
+        ----------
+        """
+
+        x = sim_info.halo_data.xminpot[index]
+        y = sim_info.halo_data.yminpot[index]
+        z = sim_info.halo_data.zminpot[index]
+
+        vx = sim_info.halo_data.vxminpot[index]
+        vy = sim_info.halo_data.vyminpot[index]
+        vz = sim_info.halo_data.vzminpot[index]
+
+        CoP = unyt.unyt_array([x, y, z], "Mpc") / sim_info.a  # to comoving
+
+        CoV = unyt.unyt_array([vx, vy, vz], "km/s")
+
+        self.gas = load_all_gas_particle_data(sim_info, CoP, CoV)
+
+
+
 

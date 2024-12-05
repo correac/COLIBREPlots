@@ -102,6 +102,8 @@ class HaloCatalogue:
         self.satellite_flag = catalogue.satellites[mask]
         self.central_flag = catalogue.centrals[mask]
 
+        self.vmax = catalogue.velocities.vmax.to("km/s").value[mask]
+
 
 def calculate_morphology(pos, vel, mass):
 
@@ -330,3 +332,6 @@ class SOAP:
 
         self.vzminpot = catalogue.get_quantity(
             "velocities.vzc").to("km/s").value[mask]
+
+        self.vmax = catalogue.get_quantity(
+            "velocities.vmax").to("km/s").value[mask]

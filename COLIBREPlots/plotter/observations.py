@@ -4,7 +4,7 @@ from simulation.utilities import constants
 import matplotlib.pylab as plt
 import pandas as pd
 import scipy.stats as stats
-from .util import func_scatter
+from .util import func_scatter, sample_IMF
 
 def make_hist(x, y, cut, xi, yi):
 
@@ -128,25 +128,25 @@ def plot_APOGEE(args):
 
     GalR, Galz, x, y = read_APOGEE(args)
     plot_contours(GalR, Galz, x, y, "turbo")
-
-def plot_APOGEE_scatter(args, with_label):
-
-    if args[1] == "O_Fe": delta = np.array([1])
-    if args[1] == "Mg_Fe": delta = np.array([2])
-
-    GalR, Galz, Fe_H, y = read_APOGEE(args)
-
-    low_Z = np.where((Fe_H >= -2) & (Fe_H <= -1))[0]
-    sig_y = np.std(y[low_Z])
-
-    plt.plot([delta-0.3,delta+0.3], [sig_y, sig_y], '-', lw=1, color='lightsteelblue')
-
-    if with_label == True:
-        plt.plot(delta, sig_y, 'X', ms=7, markeredgecolor='black',
-                 markeredgewidth=0.2, color='lightsteelblue', label='APOGEE')
-    else:
-        plt.plot(delta, sig_y, 'X', ms=7, markeredgecolor='black',
-                 markeredgewidth=0.2, color='lightsteelblue')
+#
+# def plot_APOGEE_scatter(args, with_label):
+#
+#     if args[1] == "O_Fe": delta = np.array([1])
+#     if args[1] == "Mg_Fe": delta = np.array([2])
+#
+#     GalR, Galz, Fe_H, y = read_APOGEE(args)
+#
+#     low_Z = np.where((Fe_H >= -2) & (Fe_H <= -1))[0]
+#     sig_y = np.std(y[low_Z])
+#
+#     plt.plot([delta-0.3,delta+0.3], [sig_y, sig_y], '-', lw=1, color='lightsteelblue')
+#
+#     if with_label == True:
+#         plt.plot(delta, sig_y, 'X', ms=7, markeredgecolor='black',
+#                  markeredgewidth=0.2, color='lightsteelblue', label='APOGEE')
+#     else:
+#         plt.plot(delta, sig_y, 'X', ms=7, markeredgecolor='black',
+#                  markeredgewidth=0.2, color='lightsteelblue')
 
 def read_2process_APOGEE(args, option):
 
@@ -275,10 +275,10 @@ def plot_data_Zepeda2022(xval, yval, with_label):
 
     if with_label == True:
         plt.plot(xdata, ydata, 'o', ms=2.5,
-                 markeredgecolor='black', markerfacecolor='salmon',
+                 markeredgecolor='black', markerfacecolor='lavender',
                  markeredgewidth=0.2, label='Zepeda et al. (2022)', zorder=0)
     else:
-        plt.plot(xdata, ydata, 'o', ms=2.5, markeredgecolor='black', markerfacecolor='salmon',
+        plt.plot(xdata, ydata, 'o', ms=2.5, markeredgecolor='black', markerfacecolor='lavender',
                  markeredgewidth=0.2, zorder=0)
 
 
@@ -305,11 +305,11 @@ def plot_data_Gudin2021(xval, yval, with_label):
 
     if with_label == True:
         plt.plot(xdata, ydata, 'D', ms=2,
-                 markeredgecolor='black', markerfacecolor='moccasin',
+                 markeredgecolor='black', markerfacecolor='antiquewhite',
                  markeredgewidth=0.2, label='Gudin et al. (2021)', zorder=0)
     else:
         plt.plot(xdata, ydata, 'D', ms=2,
-                 markeredgecolor='black', markerfacecolor='moccasin',
+                 markeredgecolor='black', markerfacecolor='antiquewhite',
                  markeredgewidth=0.2, zorder=0)
 
 def plot_data_Norfolk2019(xval, yval):
@@ -369,11 +369,11 @@ def plot_StrontiumObsData():
     FeH_Ro, SrFe_Ro = load_strontium_data_Roeder()
     FeH_Sp, SrFe_Sp = load_strontium_data_Spite()
     FeH_Zh, SrFe_Zh = load_strontium_data_Zhao()
-    plt.plot(FeH_Sp, SrFe_Sp, '>', ms=4, markeredgecolor='black', markerfacecolor='goldenrod',
+    plt.plot(FeH_Sp, SrFe_Sp, '>', ms=4, markeredgecolor='black', markerfacecolor='grey',
              markeredgewidth=0.2, label='Spite et al. (2018)', zorder=0)
-    plt.plot(FeH_Zh, SrFe_Zh, 'o', ms=4, markeredgecolor='black', markerfacecolor='khaki',
+    plt.plot(FeH_Zh, SrFe_Zh, 'o', ms=3, markeredgecolor='black', markerfacecolor='darkgrey',
              markeredgewidth=0.2, label='Zhao et al. (2016)', zorder=0)
-    plt.plot(FeH_Ro, SrFe_Ro, 's', ms=4, markeredgecolor='black', markerfacecolor='darkseagreen',
+    plt.plot(FeH_Ro, SrFe_Ro, 's', ms=4, markeredgecolor='black', markerfacecolor='grey',
              markeredgewidth=0.2, label='Roederer et al. (2014)', zorder=0)
 
 def plot_observations_Mead_2024():
@@ -425,26 +425,22 @@ def plot_observations_Kirby_2010():
 
 
 def load_MW_data_with_Mg_Fe():
-    # file = './plotter/Observational_data/MW.txt'
-    # data = np.loadtxt(file)
-    # FeH = data[:, 0]
-    # MgFe = data[:, 1]
 
-    file = './plotter/Observational_data/Venn_2004_MW_compilation.txt'
-    data = np.loadtxt(file, usecols=(1,2,3))
-    FeH = data[:,0]
-    MgFe = data[:,1]
+    file = './plotter/Observational_data/MW.txt'
+    data = np.loadtxt(file)
+    FeH = data[:, 0]
+    MgFe = data[:, 1]
 
-    # #compute COLIBRE standard ratios
-    # Mg_over_Fe = constants.Mg_H_Sun_Asplund - constants.Fe_H_Sun_Asplund
-    #
-    # # tabulate/compute the same ratios from Anders & Grevesse (1989)
-    # Fe_over_H_AG89 = 7.67
-    # Mg_over_H_AG89 = 7.58
-    # Mg_over_Fe_AG89 = Mg_over_H_AG89 - Fe_over_H_AG89
+    #compute COLIBRE standard ratios
+    Mg_over_Fe = constants.Mg_H_Sun_Asplund - constants.Fe_H_Sun_Asplund
 
-    # FeH = FeH + Fe_over_H_AG89 - constants.Fe_H_Sun_Asplund
-    # MgFe = MgFe + Mg_over_Fe_AG89 - Mg_over_Fe
+    # tabulate/compute the same ratios from Anders & Grevesse (1989)
+    Fe_over_H_AG89 = 7.67
+    Mg_over_H_AG89 = 7.58
+    Mg_over_Fe_AG89 = Mg_over_H_AG89 - Fe_over_H_AG89
+
+    FeH = FeH + Fe_over_H_AG89 - constants.Fe_H_Sun_Asplund
+    MgFe = MgFe + Mg_over_Fe_AG89 - Mg_over_Fe
 
     return FeH, MgFe
 
@@ -534,8 +530,16 @@ def plot_MW_data(element):
 
         # Load MW data:
         FeH_MW, MgFe_MW = load_MW_data_with_Mg_Fe()
+
+        num_min_per_bin = 5
+        bins = np.arange(-4, 2, 0.25)
+        ind = np.digitize(FeH_MW, bins)
+        ym = [np.median(MgFe_MW[ind == i]) for i in range(1, len(bins)) if len(FeH_MW[ind == i]) > num_min_per_bin]
+        xm = [np.median(FeH_MW[ind == i]) for i in range(1, len(bins)) if len(FeH_MW[ind == i]) > num_min_per_bin]
+
         plt.plot(FeH_MW, MgFe_MW, 'D', ms=2, markeredgewidth=0.2,
                  color='lightgrey', markeredgecolor='black', label='MW-data compilation (Venn et al. 2004)', zorder=0)
+
 
 
 def load_satellites_data_Mg_Fe():
@@ -629,28 +633,6 @@ def plot_satellites(element):
         plt.plot(FeH_sagittarius, MgFe_sagittarius, '*', ms=3, color='lightblue',
                  markeredgecolor='black', markeredgewidth=0.2, label='Sagittarius', zorder=0)
 
-def plot_MW_scatter(element, with_label):
-
-    if element == "O":
-        delta = np.array([1])
-        FeH_MW, OFe_MW = load_MW_data()
-        select = np.where((FeH_MW>=-2) & (FeH_MW<=-1))[0]
-        sig_y = np.std(OFe_MW[select])
-
-    if element == "Mg":
-        delta = np.array([2])
-        FeH_MW, MgFe_MW = load_MW_data_with_Mg_Fe()
-        select = np.where((FeH_MW >= -2) & (FeH_MW <= -1))[0]
-        sig_y = np.std(MgFe_MW[select])
-
-    plt.plot([delta-0.3,delta+0.3], [sig_y, sig_y], '-', lw=1, color='lightsteelblue')
-
-    if with_label == True:
-        plt.plot(delta, sig_y, '*', ms=7, markeredgecolor='black',
-                 markeredgewidth=0.2, color='lightsteelblue', label='MW')
-    else:
-        plt.plot(delta, sig_y, '*', ms=7, markeredgecolor='black',
-                 markeredgewidth=0.2, color='lightsteelblue')
 
 def plot_Zahid2017():
 
@@ -848,56 +830,10 @@ def plot_SAGA():
 
 def plot_Pristine():
 
-    input_filename = "./plotter/Observational_data/Pristine_survey.txt"
-    raw = np.loadtxt(input_filename, usecols=[1, 10])
-    FeH = raw[:,0]
-    MgH = raw[:,1]
-    plt.plot(FeH, MgH, 'x', ms=5, mew=0.3, color='grey', label='Pristine Survey')
-
-def plot_Pristine_scatter():
-
-    input_filename = "./plotter/Observational_data/Pristine_survey.txt"
-    raw = np.loadtxt(input_filename, usecols=[1, 10])
-    FeH = raw[:,0]
-    MgFe = raw[:,1]
-
-    num_min_per_bin = 5
-    bins = np.arange(-3, 2, 0.25)
-    ind = np.digitize(FeH, bins)
-    ym = [func_scatter(MgFe[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
-    xm = [np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
-    plt.plot(xm, ym, 'x', ms=5, mew=0.3, color='black', label='Pristine Survey')
+    FeH, MgFe = read_Pristine()
+    plt.plot(FeH, MgFe, 'x', ms=5, mew=0.3, color='black', label='Pristine Survey')
 
 
-def plot_MW_scatter():
-
-    FeH, MgFe = load_MW_data_with_Mg_Fe()
-
-    num_min_per_bin = 5
-    bins = np.arange(-3, 2, 0.25)
-    ind = np.digitize(FeH, bins)
-    ym = [func_scatter(MgFe[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
-    xm = [np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
-    plt.plot(xm, ym, 'D', markeredgecolor='black', markerfacecolor='lightgrey',
-             ms=2, markeredgewidth=0.2, label='MW-data compilation (Venn et al. 2004)', zorder=0)
-
-def plot_APOGEE_scatter():
-
-    input_filename = "./plotter/Observational_data/APOGEE_data.hdf5"
-    apogee_dataset = h5py.File(input_filename, "r")
-    FE_H = apogee_dataset["FE_H"][:]
-    MG_FE = apogee_dataset["MG_FE"][:]
-    Mg_Fe_Asplund = constants.Mg_H_Sun_Asplund - constants.Fe_H_Sun_Asplund
-    correction = constants.Mg_over_Fe_Grevesse07 - Mg_Fe_Asplund
-    MG_FE += correction
-
-    num_min_per_bin = 5
-    bins = np.arange(-3, 2, 0.25)
-    ind = np.digitize(FE_H, bins)
-    ym = [func_scatter(MG_FE[ind == i]) for i in range(1, len(bins)) if len(FE_H[ind == i]) > num_min_per_bin]
-    xm = [np.median(FE_H[ind == i]) for i in range(1, len(bins)) if len(FE_H[ind == i]) > num_min_per_bin]
-    plt.plot(xm, ym, 'o', markeredgecolor='black', markerfacecolor='lightgrey',
-             ms=3, markeredgewidth=0.2, label='APOGEE survey', zorder=0)
 
 def plot_Gallazzi_2021():
 
@@ -1037,11 +973,11 @@ def plot_Nicolls(option):
     logNO = raw[:, 2]  # log(N/O)
 
     if option == "NO":
-        plt.plot(logOH, logNO, '-', color='purple', lw=2,
+        plt.plot(logOH, logNO, '-', color='grey', lw=1,
                  label='Nicolls et al. (2017)')
 
     if option == "CO":
-        plt.plot(logOH, logCO, '-', color='purple', lw=2,
+        plt.plot(logOH, logCO, '-', color='grey', lw=1,
                  label='Nicolls et al. (2017)')
 
 
@@ -1073,3 +1009,374 @@ def plot_mean_yields():
         ratios = file["MgFe"][:]
 
     plt.plot(FeH, ratios, '-.',lw=2, color='turquoise', zorder=1000)
+
+def plot_Donor():
+
+    input_file = "./plotter/Observational_data/Donor2020.txt"
+
+    # Read the data
+    raw = np.loadtxt(input_file, usecols=(3, 8))
+    MgFe = raw[:, 1]
+    FeH = raw[:, 0]
+
+    # Not sure of this actually. I cannot find anywhere what solar abundances they assume
+    # Mg_Fe_Asplund = constants.Mg_H_Sun_Asplund - constants.Fe_H_Sun_Asplund
+    # correction = constants.Mg_over_Fe_Grevesse07 - Mg_Fe_Asplund
+    # MgFe += correction
+
+
+    plt.plot(FeH, MgFe, 'v', ms=3, mew=0.2, color='antiquewhite', markeredgecolor='black', label='MW-Star clusters')
+
+
+# def plot_Donor_scatter():
+#
+#     input_file = "./plotter/Observational_data/Donor2020.txt"
+#
+#     # Read the data
+#     raw = np.loadtxt(input_file, usecols=(3, 8))
+#     MgFe = raw[:, 1]
+#     FeH = raw[:, 0]
+#     stars_mass = sample_IMF(len(FeH))
+#
+#     num_min_per_bin = 2
+#     bins = np.arange(-4, 2, 0.25)
+#     ind = np.digitize(FeH, bins)
+#     ym = [func_scatter(MgFe[ind == i], stars_mass[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+#     xm = [np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+#
+#     plt.plot(xm, ym, 'v', markeredgecolor='black', markerfacecolor='antiquewhite',
+#              ms=4, markeredgewidth=0.2, label='MW-Star clusters', zorder=0)
+
+
+def plot_Pritzl_2005():
+
+    input_file = "./plotter/Observational_data/Pritzl_2005.txt"
+
+    # Read the data
+    raw = np.loadtxt(input_file, usecols=(1, 2))
+    MgFe = raw[:, 1]
+    FeH = raw[:, 0]
+
+    Mg_Fe_Asplund = constants.Mg_H_Sun_Asplund - constants.Fe_H_Sun_Asplund
+    correction = constants.Mg_over_Fe_Grevesse07 - Mg_Fe_Asplund
+    MgFe += correction
+
+    plt.plot(FeH, MgFe, 'o', ms=3, mew=0.2, color='mistyrose',
+             markeredgecolor='black', label='MW-Star clusters', zorder=0)
+
+
+# def plot_Pritzl_2005_scatter():
+#
+#     input_file = "./plotter/Observational_data/Pritzl_2005.txt"
+#
+#     # Read the data
+#     raw = np.loadtxt(input_file, usecols=(1, 2))
+#     MgFe = raw[:, 1]
+#     FeH = raw[:, 0]
+#
+#     num_min_per_bin = 5
+#     bins = np.arange(-4, 2, 0.5)
+#     ind = np.digitize(FeH, bins)
+#     ym = [len(np.where(MgFe[ind == i] < 0.4)[0]) / len(MgFe[ind == i]) for i in range(1, len(bins)) if
+#           len(FeH[ind == i]) > num_min_per_bin]
+#     num_per_bin = [len(MgFe[ind == i]) for i in range(1, len(bins)) if
+#           len(FeH[ind == i]) > num_min_per_bin]
+#
+#     yerror = ym / np.sqrt(num_per_bin)
+#
+#     xm = [np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+#     xlowe = [np.median(FeH[ind == i])-np.percentile(FeH[ind == i],16) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+#     xhighe = [np.percentile(FeH[ind == i],84)-np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+#
+#     plt.errorbar(xm, ym, yerr=yerror, xerr=[xlowe, xhighe], lw=0.5, fmt='o', markeredgecolor='black', markerfacecolor='mistyrose',
+#              ecolor='grey', ms=4, markeredgewidth=0.25, label='MW-Star clusters', zorder=0)
+
+
+def plot_Venn2020_scatter():
+
+    FeH, MgFe = read_Venn2020()
+    num_min_per_bin = 5
+    bins = np.arange(-4, 2, 0.5)
+    ind = np.digitize(FeH, bins)
+    ym = [len(np.where(MgFe[ind == i] < 0.4)[0]) / len(MgFe[ind == i]) for i in range(1, len(bins)) if
+          len(FeH[ind == i]) > num_min_per_bin]
+    num_per_bin = [len(MgFe[ind == i]) for i in range(1, len(bins)) if
+          len(FeH[ind == i]) > num_min_per_bin]
+
+    yerror = ym / np.sqrt(num_per_bin)
+
+    xm = [np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+
+    xlowe = [np.median(FeH[ind == i])-np.percentile(FeH[ind == i],16) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xhighe = [np.percentile(FeH[ind == i],84)-np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+
+    plt.errorbar(xm, ym, yerr=yerror, xerr=[xlowe, xhighe], lw=0.5, fmt='>', markerfacecolor='lavender', markeredgecolor='black',
+             ecolor='grey', ms=4, markeredgewidth=0.3, label='Venn et al. (2020)', zorder=0)
+
+
+def plot_Yong2013_scatter():
+
+    FeH, MgFe = read_Yong2013()
+    num_min_per_bin = 5
+    bins = np.arange(-4, 2, 0.5)
+    ind = np.digitize(FeH, bins)
+    ym = [len(np.where(MgFe[ind == i] < 0.4)[0]) / len(MgFe[ind == i]) for i in range(1, len(bins)) if
+          len(FeH[ind == i]) > num_min_per_bin]
+    num_per_bin = [len(MgFe[ind == i]) for i in range(1, len(bins)) if
+          len(FeH[ind == i]) > num_min_per_bin]
+
+    yerror = ym / np.sqrt(num_per_bin)
+
+    xm = [np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+
+    xlowe = [np.median(FeH[ind == i])-np.percentile(FeH[ind == i],16) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xhighe = [np.percentile(FeH[ind == i],84)-np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+
+    plt.errorbar(xm, ym, yerr=yerror, xerr=[xlowe, xhighe], lw=0.5, fmt='v', markerfacecolor='antiquewhite', markeredgecolor='black',
+             ecolor='grey', ms=4, markeredgewidth=0.3, label='Yong et al. (2013)', zorder=0)
+
+
+def plot_Venn2020():
+
+    FeH, MgFe = read_Venn2020()
+    plt.plot(FeH, MgFe, '>', markeredgecolor='black', markerfacecolor='mistyrose',
+             ms=4, markeredgewidth=0.2, label='Venn et al. (2020)', zorder=-10)
+
+
+def plot_Yong2013():
+
+    FeH, MgFe = read_Yong2013()
+    plt.plot(FeH, MgFe, 'v', markeredgecolor='black', markerfacecolor='antiquewhite',
+             ms=4, markeredgewidth=0.2, label='Yong et al. (2013)', zorder=-10)
+
+def read_Venn2020():
+    # tabulate/compute the same ratios from Grevesse & Nobels (1993) Z/X = 0.0245
+    Fe_over_H_G93 = 7.45  # Assuming 6.5% mass of Fe in Z
+    Mg_over_H_G93 = 7.71  # Assuming 5.2% mass of Mg in Z
+    Mg_over_Fe_G93 = Mg_over_H_G93 - Fe_over_H_G93
+
+    # tabulate/compute the same ratios from Asplund (2009)
+    Mg_Fe_Sun_Asplund = constants.Mg_H_Sun_Asplund - constants.Fe_H_Sun_Asplund
+
+    correction = Mg_over_Fe_G93 - Mg_Fe_Sun_Asplund
+
+    input_filename = "./plotter/Observational_data/Venn_2020.txt"
+    raw = np.loadtxt(input_filename, usecols=[1, 3])
+    FeH = raw[:,0]
+    MgFe = raw[:,1]
+    no_nans = np.where((MgFe>-10) & (FeH>-10))[0]
+    FeH = raw[no_nans,0]
+    MgFe = raw[no_nans,1]
+
+    MgFe += correction # Apply correction to convert to Asplund+
+
+    return FeH, MgFe
+
+def plot_Venn2020_avg():
+
+    FeH, MgFe = read_Venn2020()
+    num_min_per_bin = 10
+    bins = np.arange(-4, 2, 0.5)
+    ind = np.digitize(FeH, bins)
+    ym = [np.mean(MgFe[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xm = [np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    # yerr = [np.std(MgFe[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    yerr = [1.96 * np.std(MgFe[ind == i]) / np.sqrt(len(MgFe[ind == i])) for i in range(1, len(bins)) if
+            len(FeH[ind == i]) > num_min_per_bin]
+    xlowe = [np.median(FeH[ind == i])-np.percentile(FeH[ind == i],16) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xhighe = [np.percentile(FeH[ind == i],84)-np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+
+    plt.errorbar(xm, ym, yerr=yerr, xerr=[xlowe, xhighe], lw=0.5, fmt='>', markerfacecolor='mistyrose', markeredgecolor='black',
+             ecolor='grey', ms=4, markeredgewidth=0.4, label='Venn et al. (2020)', zorder=0)
+
+
+def read_Yong2013():
+
+    input_filename = "./plotter/Observational_data/Yong_2013.txt"
+    raw = np.loadtxt(input_filename, usecols=[4])
+    MgFe = raw[:]
+
+    input_filename = "./plotter/Observational_data/Yong_2013_FeH.txt"
+    raw = np.loadtxt(input_filename, usecols=[11])
+    FeH = raw[:]
+
+    no_nans = np.where((MgFe>-10) & (FeH>-10))[0]
+    FeH = FeH[no_nans]
+    MgFe = MgFe[no_nans]
+
+    # No need to apply correction, Yong et al. + assume Asplund+09 solar abundances
+
+    return FeH, MgFe
+
+def plot_Yong2013_avg():
+
+    FeH, MgFe = read_Yong2013()
+    num_min_per_bin = 10
+    bins = np.arange(-4, 2, 0.5)
+    ind = np.digitize(FeH, bins)
+    ym = [np.mean(MgFe[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xm = [np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    # yerr = [np.std(MgFe[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    yerr = [1.96 * np.std(MgFe[ind == i]) / np.sqrt(len(MgFe[ind == i])) for i in range(1, len(bins)) if
+            len(FeH[ind == i]) > num_min_per_bin]
+    xlowe = [np.median(FeH[ind == i])-np.percentile(FeH[ind == i],16) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xhighe = [np.percentile(FeH[ind == i],84)-np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+
+    plt.errorbar(xm, ym, yerr=yerr, xerr=[xlowe, xhighe], lw=0.5, fmt='v', markerfacecolor='antiquewhite', markeredgecolor='black',
+             ecolor='grey', ms=4, markeredgewidth=0.4, label='Yong et al. (2013)', zorder=0)
+
+def read_Venn04():
+
+    file = './plotter/Observational_data/Venn_2004_MW_compilation.txt'
+    data = np.loadtxt(file, usecols=(1, 2, 3))
+    FeH = data[:, 0]
+    MgFe = data[:, 1]
+    Reference = data[:, 2]
+
+    # We need to apply correction factors depending on the study:
+
+    #compute COLIBRE standard ratios
+    Mg_over_Fe_Asplund09 = constants.Mg_H_Sun_Asplund - constants.Fe_H_Sun_Asplund
+
+    # tabulate/compute the same ratios from Anders & Grevesse (1989)
+    Fe_over_H_AG89 = 7.51  # 7.67?
+    Mg_over_H_AG89 = 7.58
+    Mg_over_Fe_AG89 = Mg_over_H_AG89 - Fe_over_H_AG89
+    correction_MgFe = Mg_over_Fe_AG89 - Mg_over_Fe_Asplund09
+    correction_FeH = Fe_over_H_AG89 - constants.Fe_H_Sun_Asplund
+
+    select = np.where(np.isin(Reference, [1, 2, 5, 10, 11, 12]))[0]
+    FeH[select] = FeH[select] + correction_FeH
+    MgFe[select] = MgFe[select] + correction_MgFe
+
+    # tabulate/compute the same ratios from Grevesse (1996)
+    Fe_over_H_Gr96 = 7.50
+    Mg_over_H_Gr96 = 7.58
+    Mg_over_Fe_Gr96 = Mg_over_H_Gr96 - Fe_over_H_Gr96
+    correction_MgFe = Mg_over_Fe_Gr96 - Mg_over_Fe_Asplund09
+    correction_FeH = Fe_over_H_Gr96 - constants.Fe_H_Sun_Asplund
+
+    select = np.where(Reference == 6)[0]
+    FeH[select] = FeH[select] + correction_FeH
+    MgFe[select] = MgFe[select] + correction_MgFe
+
+    # Correction Bensy+
+    Fe_over_H = 7.45 # 7.56?
+    Mg_over_H = 7.58
+    Mg_over_Fe = Mg_over_H - Fe_over_H
+    correction_MgFe = Mg_over_Fe - Mg_over_Fe_Asplund09
+    correction_FeH = Fe_over_H - constants.Fe_H_Sun_Asplund
+
+    select = np.where(Reference == 3)[0]
+    FeH[select] = FeH[select] + correction_FeH
+    MgFe[select] = MgFe[select] + correction_MgFe
+
+    # Correction Reddy+
+    Fe_over_H = 7.45
+    Mg_over_H = 7.58
+    Mg_over_Fe = Mg_over_H - Fe_over_H
+    correction_MgFe = Mg_over_Fe - Mg_over_Fe_Asplund09
+    correction_FeH = Fe_over_H - constants.Fe_H_Sun_Asplund
+
+    select = np.where(Reference == 7)[0]
+    FeH[select] = FeH[select] + correction_FeH
+    MgFe[select] = MgFe[select] + correction_MgFe
+
+    # Correction Gratton & Sneden
+    Fe_over_H = 7.70
+    Mg_over_H = 7.66
+    Mg_over_Fe = Mg_over_H - Fe_over_H
+    correction_MgFe = Mg_over_Fe - Mg_over_Fe_Asplund09
+    correction_FeH = Fe_over_H - constants.Fe_H_Sun_Asplund
+
+    select = np.where(np.isin(Reference, [14, 15]))[0]
+    FeH[select] = FeH[select] + correction_FeH
+    MgFe[select] = MgFe[select] + correction_MgFe
+
+    return FeH, MgFe
+
+
+def plot_Venn2004():
+
+    FeH, MgFe = read_Venn04()
+    plt.plot(FeH, MgFe, 'D', ms=2.5, markeredgewidth=0.2,
+             color='lightgrey', markeredgecolor='black', label='MW-data compilation (Venn et al. 2004)', zorder=0)
+
+
+def plot_Venn2004_avg():
+
+    FeH, MgFe = read_Venn04()
+
+    num_min_per_bin = 10
+    bins = np.arange(-4, 2, 0.5)
+    ind = np.digitize(FeH, bins)
+    ym = [np.mean(MgFe[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xm = [np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    # yerr = [np.std(MgFe[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    yerr = [1.96 * np.std(MgFe[ind == i]) / np.sqrt(len(MgFe[ind == i])) for i in range(1, len(bins)) if
+            len(FeH[ind == i]) > num_min_per_bin]
+    xlowe = [np.median(FeH[ind == i])-np.percentile(FeH[ind == i],16) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xhighe = [np.percentile(FeH[ind == i],84)-np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+
+    plt.errorbar(xm, ym, yerr=yerr, xerr=[xlowe, xhighe], lw=0.5, fmt='D', markeredgecolor='black', markerfacecolor='lightgrey',
+             ecolor='grey', ms=2.5, markeredgewidth=0.4, label='MW-data compilation (Venn et al. 2004)', zorder=0)
+
+
+def read_Pristine():
+    input_filename = "./plotter/Observational_data/Pristine_survey.txt"
+    raw = np.loadtxt(input_filename, usecols=[1, 10])
+    FeH = raw[:, 0]
+    MgFe = raw[:, 1]
+    no_nans = np.where((MgFe > -10) & (FeH > -10))[0]
+    FeH = raw[no_nans, 0]
+    MgFe = raw[no_nans, 1]
+
+    # No need of correction factors; Pristine+ assume Asplund+ solar abundances
+    return FeH, MgFe
+
+def plot_Pristine_avg():
+
+    FeH, MgFe = read_Pristine()
+    num_min_per_bin = 10
+    bins = np.arange(-4, 2, 0.5)
+    ind = np.digitize(FeH, bins)
+    ym = [np.mean(MgFe[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xm = [np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    # yerr = [np.std(MgFe[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    yerr = [1.96 * np.std(MgFe[ind == i]) / np.sqrt(len(MgFe[ind == i])) for i in range(1, len(bins)) if
+            len(FeH[ind == i]) > num_min_per_bin]
+
+    xlowe = [np.median(FeH[ind == i])-np.percentile(FeH[ind == i],16) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xhighe = [np.percentile(FeH[ind == i],84)-np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+
+    plt.errorbar(xm, ym, yerr=yerr, xerr=[xlowe, xhighe], lw=0.5, fmt='x', markerfacecolor='black', markeredgecolor='black',
+             ecolor='grey', ms=4, markeredgewidth=0.5, label='Pristine Survey', zorder=0)
+
+def plot_MW_joint_datasets():
+
+    FeH, MgFe = read_Pristine()
+    x, y = read_Venn04()
+    FeH = np.append(FeH, x)
+    MgFe = np.append(MgFe, y)
+    x, y = read_Yong2013()
+    FeH = np.append(FeH, x)
+    MgFe = np.append(MgFe, y)
+    x, y = read_Venn2020()
+    FeH = np.append(FeH, x)
+    MgFe = np.append(MgFe, y)
+    # _, _, x, y = read_APOGEE(("Fe_H","Mg_Fe"))
+    # FeH = np.append(FeH, x)
+    # MgFe = np.append(MgFe, y)
+
+    num_min_per_bin = 10
+    bins = np.arange(-4, 2, 0.5)
+    ind = np.digitize(FeH, bins)
+    ym = [np.mean(MgFe[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    yerr = [1.96 * np.std(MgFe[ind == i])/np.sqrt(len(MgFe[ind == i])) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+
+    xm = [np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xlowe = [np.median(FeH[ind == i])-np.percentile(FeH[ind == i],16) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+    xhighe = [np.percentile(FeH[ind == i],84)-np.median(FeH[ind == i]) for i in range(1, len(bins)) if len(FeH[ind == i]) > num_min_per_bin]
+
+    plt.errorbar(xm, ym, yerr=yerr, xerr=[xlowe, xhighe], lw=0.5, fmt='o', markerfacecolor='pink', markeredgecolor='black',
+             ecolor='grey', ms=4, markeredgewidth=0.5, zorder=0)

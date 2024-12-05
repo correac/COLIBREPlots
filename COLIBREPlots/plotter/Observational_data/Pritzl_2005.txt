@@ -1,0 +1,61 @@
+# Globular cluster data from Pritzl, Venn & Irwin (2005). Only those GB within the galactic disk are included.
+# The selection is based either on the classification analysis from Pritzl et al., or from Mackey & Gilmore (2004)
+# Reference list:
+# (1) Gratton et al. (1986)
+# (2) Brown & Wallerstein (1992)
+# (3) Norris & Da Costa (1995)
+# (4) Carretta et al. (2004), James et al. (2004a)
+# (5) Gratton & Ortolani (1989)
+# (6) Gonzalez & Wallerstein (1998)
+# (7) Mishenina et al. (2003)
+# (8) Kraft et al. (1995)
+# (9) Gratton (1987)
+# (10) Carretta et al. (2001)
+# (11) Zoccali et al. (2004)
+# (12) Origlia et al. (2005)
+# (13) Barbuy et al. (1999)
+# (14) Cohen et al. (1999)
+# (15) Yong et al. (2003)
+# (16) Cavallo et al. (2004)
+# (17) Ramirez & Cohen(2002)
+# (18) Lee et al. (2004)
+# (19) Origlia & Rich (2004)
+# Cluster Name (0) | [Fe/H] (1) | [Mg/Fe] (2) | Reference | Nstars
+47Truc  -0.82   0.36    1   3
+47Truc  -0.61   0.38    2   4
+47Truc  -0.62   0.29    3   1
+47Truc  -0.62   0.42    4   12
+NGC3201 -1.34   0.32    5   3
+NGC3201 -1.58   0.38    6   18
+NGC4833 -1.74   0.47    5   2
+M12 -1.36   0.29    7   1
+M10 -1.42   0.10    5   2
+M10 -1.52   0.10    8   14
+M10 -1.53   0.10    7   2
+NGC6352 -0.79   0.33    9   3
+NGC6362 -1.04   0.58    9   2
+NGC6397 -1.88   0.28    5   3
+NGC6397 -1.97   0.38    3   2
+NGC6397 -2.02   0.38    4   8
+NGC6528 0.10   -0.04    10  4
+NGC6528 -0.11  -0.06    11  3
+NGC6528 -0.17   0.35    12  4
+NGC6528 -0.06   0.11    12  4
+NGC6553 -0.55   0.56    13  2
+NGC6553 -0.17   0.41    14  5
+NGC6553 -0.28   0.47    14  5
+M22 -1.56   0.23    5   3
+M22 -1.46   0.28    2   7
+M22 -1.49   0.27    2   7
+NGC6752 -1.53   0.48    1   3
+NGC6752 -1.48   0.40    3   6
+NGC6752 -1.49   0.02    4   18
+NGC6752 -1.59   0.33    15  20
+NGC6752 -1.54   0.21    16  11
+M71 -0.81   0.51    1   3
+M71 -0.74   0.30    17  25
+M71 -0.80   0.02    7   2
+M71 -0.76   0.28    18  2
+Liller1 -0.3    0.03    12  4
+Ter5 -0.25  0.30    19  6
+

@@ -34,20 +34,20 @@
 # Reference list
 # 1 Fulbright (2000AJ....120.1841F, 2002AJ....123..404F) [adopt solar abundances of Anders & Grevesse (1989)]
 # 2 Stephens & Boesgaard (2002AJ....123.1647S) [adopt solar abundances of Anders & Grevesse (1989)]
-# 3 Bensby et al. (2003A&A...410..527B)
+# 3 Bensby et al. (2003A&A...410..527B) [adopt e(Fe)=7.56 and e(Mg)=7.58]
 # 4 Nissen & Schuster (1997A&A...326..751N)
 # 5 Hanson et al. (1998AJ....116.1286H) [adopt solar abundances of Anders & Grevesse (1989)]
 # 6 Prochaska et al. (2000AJ....120.2513P) [adopt solar abundances of Grevesse (1996)]
-# 7 Reddy et al. (2003MNRAS.340..304R)
+# 7 Reddy et al. (2003MNRAS.340..304R) [adopt e(Fe)=7.45 and e(Mg)=7.54]
 # 8 Edvardsson et al. (1993A&A...275..101E)
 # 9 McWilliam et al. (1995AJ....109.2736M), McWilliam (1998AJ....115.1640M)
-# 10 Johnson (2002ApJS..139..219)
-# 11 Burris et al. (2000ApJ...544..302B)
-# 12 Ivans et al. (2003ApJ...592..906I)
-# 13 Ryan et al. (1996ApJ...471..254R)
-# 14 Gratton & Sneden (1991A&A...241..501G, 1994A&A...287..927G)
-# 15 Gratton & Sneden (1988A&A...204..193G)
-# 16 Geisler, D., Smith, V. V., & Wallerstein, G. 2004, in preparation
+# 10 Johnson (2002ApJS..139..219) [adopt solar abundances of Anders & Grevesse (1989)]
+# 11 Burris et al. (2000ApJ...544..302B) [adopt solar abundances of Anders & Grevesse (1989)]
+# 12 Ivans et al. (2003ApJ...592..906I) [adopt solar abundances of Anders & Grevesse (1989)]
+# 13 Ryan et al. (1996ApJ...471..254R) [adopt solar abundances of Anders & Grevesse (1989)]
+# 14 Gratton & Sneden (1991A&A...241..501G, 1994A&A...287..927G) [adopt e(Fe)=7.70 and e(Mg)=7.66]
+# 15 Gratton & Sneden (1988A&A...204..193G) [adopt e(Fe)=7.70 and e(Mg)=7.66]
+# 16 Geisler, D., Smith, V. V., & Wallerstein, G. 2004 [adopt e(Fe)=7.50 and e(Mg)=7.58]
 # 17 Shetrone et al. (2001ApJ...548..592S)
 # 18 Shetrone et al. (2003AJ....125..684S)
 #---------- ------- ------- --

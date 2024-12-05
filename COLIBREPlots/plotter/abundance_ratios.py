@@ -339,7 +339,7 @@ def plot_abundance_ratios_single_run(config_parameters):
 
 def plot_abundance_ratios_sr_processes_single_run(config_parameters):
 
-    color_list = ['steelblue', 'y', 'salmon']
+    color_list = ['steelblue', 'salmon']
     name_list = ["L025N376", "L025N752"]
 
     # Plot parameters
@@ -348,8 +348,8 @@ def plot_abundance_ratios_sr_processes_single_run(config_parameters):
         "font.family": "Times",
         "text.usetex": True,
         "figure.figsize": (7, 2),
-        "figure.subplot.left": 0.08,
-        "figure.subplot.right": 0.98,
+        "figure.subplot.left": 0.07,
+        "figure.subplot.right": 0.99,
         "figure.subplot.bottom": 0.22,
         "figure.subplot.top": 0.95,
         "lines.markersize": 0.5,
@@ -360,55 +360,71 @@ def plot_abundance_ratios_sr_processes_single_run(config_parameters):
     rcParams.update(params)
     plt.figure()
     ax = plt.subplot(1, 3, 1)
-    plt.grid(linestyle='-', linewidth=0.3)
+    plt.grid(linestyle='-', linewidth=0.2)
 
     plot_GALAH("Ba_Fe", False)
-    plot_data_Gudin2021("Fe_H", "Ba_Fe", False)
-    plot_data_Zepeda2022("Fe_H", "Ba_Fe", False)
+    plot_data_Gudin2021("Fe_H", "Ba_Fe", True)
+    plot_data_Zepeda2022("Fe_H", "Ba_Fe", True)
     # plot_data_Norfolk2019("Fe_H", "Ba_Fe")
     for i in range(config_parameters.number_of_inputs):
         sim_info = read_simulation(config_parameters, i)
         data = read_galactic_abundances(sim_info)
-        plot_median_relation(data["Fe_H"], data["Ba_Fe"], color_list[i], name_list[i])
+        # plot_median_relation(data["Fe_H"], data["Ba_Fe"], color_list[i], name_list[i])
+        plot_median_relation_one_sigma(data["Fe_H"], data["Ba_Fe"], color_list[i], None)
 
     plt.axis([-4, 1, -2, 3])
     plt.xticks([-4, -3, -2, -1, 0])
     plt.xlabel("[Fe/H]")
     plt.ylabel("[X/Fe]")
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    plt.legend(loc=[0.6, 0.8], labelspacing=0.05, handlelength=0.5, handletextpad=0.05,
+    plt.legend(loc=[0.5, 0.8], labelspacing=0.05, handlelength=0.5, handletextpad=0.05,
                frameon=False, fontsize=8, ncol=1, columnspacing=0.8)
 
     props = dict(facecolor='white', edgecolor='black', boxstyle='round', pad=0.2)
     ax.text(0.68, 0.15, '[Ba/Fe]', transform=ax.transAxes, fontsize=12,
             verticalalignment='top', bbox=props)
 
+    ax.annotate('GALAH data', (-1.25, 1.9), fontsize=8)
+    plt.plot([-1.35, -1.25], [2.05, 2.05], '-', lw=0.5, color='black')
+
+    ax2 = ax.twinx()
+    ax2.axis('off')
+    simulation_list = ["Default diffusion", "No diffusion"]
+    #simulation_list = name_list
+    for i in range(config_parameters.number_of_inputs):
+        ax2.plot([], [], lw=2, color=color_list[i], label=simulation_list[i])
+
+    ax2.legend(loc=[0.01, 0.8], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.05,
+               frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=8, columnspacing=0.8,
+               numpoints=1)
+
+
     ###
     ax = plt.subplot(1, 3, 2)
-    plt.grid(linestyle='-', linewidth=0.3)
+    plt.grid(linestyle='-', linewidth=0.2)
 
     plot_StrontiumObsData()
-    plot_data_Gudin2021("Fe_H", "Sr_Fe", False)
-    plot_data_Zepeda2022("Fe_H", "Sr_Fe", False)
+    plot_data_Gudin2021("Fe_H", "Sr_Fe", True)
+    plot_data_Zepeda2022("Fe_H", "Sr_Fe", True)
     # plot_data_Norfolk2019("Fe_H", "Sr_Fe")
     for i in range(config_parameters.number_of_inputs):
         sim_info = read_simulation(config_parameters, i)
         data = read_galactic_abundances(sim_info)
-        plot_median_relation(data["Fe_H"], data["Sr_Fe"], color_list[i], None)
+        plot_median_relation_one_sigma(data["Fe_H"], data["Sr_Fe"], color_list[i], None)
 
     plt.axis([-4, 1, -2, 3])
     plt.xlabel("[Fe/H]")
     plt.xticks([-4, -3, -2, -1, 0])
     ax.get_yaxis().set_ticklabels([])
-    plt.legend(loc=[0.45, 0.73], labelspacing=0.05, handlelength=0.5, handletextpad=0.05,
-               frameon=False, fontsize=8, ncol=1, columnspacing=0.2)
+    plt.legend(loc=[0.01, 0.73], labelspacing=0.05, handlelength=0.5, handletextpad=0.05,
+               frameon=False, fontsize=8, ncol=2, columnspacing=0.03)
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
     ax.text(0.68, 0.15, '[Sr/Fe]', transform=ax.transAxes, fontsize=12,
             verticalalignment='top', bbox=props)
 
     ###
     ax = plt.subplot(1, 3, 3)
-    plt.grid(linestyle='-', linewidth=0.3)
+    plt.grid(linestyle='-', linewidth=0.2)
 
     plot_GALAH("Eu_Fe",False)
     plot_data_Gudin2021("Fe_H", "Eu_Fe", True)
@@ -416,7 +432,7 @@ def plot_abundance_ratios_sr_processes_single_run(config_parameters):
     for i in range(config_parameters.number_of_inputs):
         sim_info = read_simulation(config_parameters, i)
         data = read_galactic_abundances(sim_info)
-        plot_median_relation(data["Fe_H"], data["Eu_Fe"], color_list[i], None)
+        plot_median_relation_one_sigma(data["Fe_H"], data["Eu_Fe"], color_list[i], None)
 
     plt.axis([-4, 1, -2, 3])
     plt.xlabel("[Fe/H]")
@@ -440,21 +456,35 @@ def plot_abundance_ratios_sr_processes_single_run(config_parameters):
     ax = plt.subplot(1, 3, 1)
     plt.grid(linestyle='-', linewidth=0.3)
 
-    plot_data_Zepeda2022("Mg_H", "Ba_Mg", False)
+    plot_data_Zepeda2022("Mg_H", "Ba_Mg", True)
     for i in range(config_parameters.number_of_inputs):
         sim_info = read_simulation(config_parameters, i)
         data = read_galactic_abundances(sim_info)
-        plot_median_relation(data["Mg_H"], data["Ba_Mg"], color_list[i], None)
+        plot_median_relation_one_sigma(data["Mg_H"], data["Ba_Mg"], color_list[i], None)
 
     plt.axis([-4, 1, -2, 2])
     plt.xticks([-4, -3, -2, -1, 0])
     plt.xlabel("[Mg/H]")
     plt.ylabel("[X/Mg]")
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
-    # plt.legend(loc=[0, 0.85], labelspacing=0.05, handlelength=0.5, handletextpad=0.05,
-    #            frameon=False, fontsize=10, ncol=1, columnspacing=0.1)
+
     ax.text(0.68, 0.15, '[Ba/Mg]', transform=ax.transAxes, fontsize=12,
             verticalalignment='top', bbox=props)
+
+    ax.legend(loc=[0.51, 0.88], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.05,
+               frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=8, columnspacing=0.8,
+               numpoints=1)
+
+    ax2 = ax.twinx()
+    ax2.axis('off')
+    simulation_list = ["Default diffusion", "No diffusion"]
+    #simulation_list = name_list
+    for i in range(config_parameters.number_of_inputs):
+        ax2.plot([], [], lw=2, color=color_list[i], label=simulation_list[i])
+
+    ax2.legend(loc=[0.52, 0.74], ncol=1, labelspacing=0.05, handlelength=0.5, handletextpad=0.05,
+               frameon=False, facecolor='goldenrod', framealpha=0.3, fontsize=8, columnspacing=0.8,
+               numpoints=1)
 
     ###
     ax = plt.subplot(1, 3, 2)
@@ -464,7 +494,7 @@ def plot_abundance_ratios_sr_processes_single_run(config_parameters):
     for i in range(config_parameters.number_of_inputs):
         sim_info = read_simulation(config_parameters, i)
         data = read_galactic_abundances(sim_info)
-        plot_median_relation(data["Mg_H"], data["Sr_Mg"], color_list[i], None)
+        plot_median_relation_one_sigma(data["Mg_H"], data["Sr_Mg"], color_list[i], None)
 
     plt.axis([-4, 1, -2, 2])
     plt.xticks([-4, -3, -2, -1, 0])
@@ -482,7 +512,7 @@ def plot_abundance_ratios_sr_processes_single_run(config_parameters):
     for i in range(config_parameters.number_of_inputs):
         sim_info = read_simulation(config_parameters, i)
         data = read_galactic_abundances(sim_info)
-        plot_median_relation(data["Mg_H"], data["Eu_Mg"], color_list[i], None)
+        plot_median_relation_one_sigma(data["Mg_H"], data["Eu_Mg"], color_list[i], None)
 
     plt.axis([-4, 1, -2, 2])
     plt.xticks([-4, -3, -2, -1, 0, 1])

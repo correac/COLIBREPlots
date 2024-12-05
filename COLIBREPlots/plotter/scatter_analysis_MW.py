@@ -10,12 +10,13 @@ import scipy.stats as stat
 from simulation.simulation_data import read_simulation
 from simulation import particle_data
 from simulation.halo_catalogue import calculate_morphology
-from .util import plot_median_relation, plot_median_relation_one_sigma, plot_scatter
+from .util import plot_median_relation, plot_median_relation_one_sigma, plot_scatter, plot_cumulative_function, plot_mean
 import h5py
 from simulation.utilities import constants
 from .abundance_ratios import plot_APOGEE
-from .observations import (plot_APOGEE_scatter, plot_GALAH, plot_MW_data, plot_MW_scatter,
-                           plot_Pristine, plot_Pristine_scatter, plot_MW_scatter, plot_APOGEE_scatter)
+from .observations import (plot_Pristine, plot_Yong2013, plot_Venn2020, plot_Venn2004,
+                           plot_Yong2013_avg, plot_Venn2020_avg, plot_Pristine_avg, plot_Venn2004_avg,
+                           plot_MW_joint_datasets)
 
 def read_MW_scatter_in_abundances(sim_info, element_list):
 
@@ -446,12 +447,15 @@ def read_MW_abundances(sim_info, element_list):
 
     filename = "./outputs/MWGalaxies_stellar_abundances_" + sim_info.simulation_name + ".hdf5"
     with h5py.File(filename, "r") as file:
+        Ms = file["Data/HostGalaxylogMstellar"][:]
+        kappa = file["Data/HostGalaxyKappa"][:]
         x = file["Data/"+element_list[0]][:]
         y = file["Data/"+element_list[1]][:]
         R = file["Data/GalactocentricRadius"][:]
         z = file["Data/GalactocentricZ"][:]
 
-        select = np.where((R<100) & (np.abs(z)<10))[0]
+    # select = np.where((kappa>0.4) & (Ms>=9.5) & (Ms<=12) & (np.abs(z)<200) & (R<200))[0]
+    select = np.where((np.abs(z)<200) & (R<200))[0]
 
     return x[select], y[select]
 
@@ -530,7 +534,7 @@ def plot_scatter_of_MW(config_parameters):
         "figure.subplot.left": 0.11,
         "figure.subplot.right": 0.98,
         "figure.subplot.bottom": 0.16,
-        "figure.subplot.top": 0.85,
+        "figure.subplot.top": 0.8,
         "lines.markersize": 0.5,
         "lines.linewidth": 0.2,
         "figure.subplot.wspace": 0.25,
@@ -539,11 +543,18 @@ def plot_scatter_of_MW(config_parameters):
     rcParams.update(params)
     plt.figure()
     ax = plt.subplot(1, 2, 1)
-    plt.grid(linestyle='-', linewidth=0.3)
+    plt.grid(linestyle='-', linewidth=0.15)
 
-    plot_MW_data('Mg')
+    plot_Venn2004()
     plot_Pristine()
-    for i in range(config_parameters.number_of_inputs):
+    plot_Yong2013()
+    plot_Venn2020()
+
+    # plot_Donor()
+    # plot_Pritzl_2005()
+
+    # for i in range(config_parameters.number_of_inputs):
+    for i in range(4):
         sim_info = read_simulation(config_parameters, i)
         Fe_H, Mg_Fe = read_MW_abundances(sim_info, ("Fe_H", "Mg_Fe"))
         plot_median_relation_one_sigma(Fe_H, Mg_Fe, color_list[i], sim_info.simulation_name)
@@ -558,31 +569,64 @@ def plot_scatter_of_MW(config_parameters):
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
 
     lines = ax.get_lines()
-    legend1 = plt.legend([lines[i] for i in [5, 9, 13, 17]],
+    legend2 = plt.legend([lines[i] for i in [0, 1, 2, 3]],
+                         ["Venn et al. (2004)", "Lucchesi et al. (2021)", "Yong et al. (2013)", "Venn et al. (2020)"],
+                         loc=[0.0, 1.03], labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
+                         frameon=False, fontsize=9, ncol=4, columnspacing=0.8)
+    ax.add_artist(legend2)
+
+    lines = ax.get_lines()
+    legend1 = plt.legend([lines[i] for i in [7, 11, 15, 19]],
                          ["No diffusion", "Low diffusion", "Default diffusion", "High diffusion"],
-                         loc=[0.0, 1.08],
-                         labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
-                         frameon=False, fontsize=9, ncol=4, columnspacing=1.2)
+                         loc=[0.0, 1.11],
+                         labelspacing=0.05, handlelength=1, handletextpad=0.3,
+                         frameon=False, fontsize=9, ncol=4, columnspacing=1.0)
     ax.add_artist(legend1)
 
-    legend2 = plt.legend([lines[i] for i in [0, 1]],
-                         ["MW-data compilation", "Pristine Survey"],
-                         loc=[0.0, 1.01], labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
-                         frameon=False, fontsize=9, ncol=2, columnspacing=1.2)
-    ax.add_artist(legend2)
+    ax2 = ax.twinx()
+    ax2.axis('off')
+    line_style = ['-','--']
+    for i in range(2): ax2.plot([], [], lw=1, color='black', ls=line_style[i])
+    lines = ax2.get_lines()
+    legend0 = plt.legend([lines[i] for i in [0, 1]],
+                         ["L025N376", "L025N188"],
+                         loc=[0.0, 1.18], labelspacing=0.02, handlelength=1, handletextpad=0.2,
+                         frameon=False, fontsize=9, ncol=2, columnspacing=1.8)
+    ax2.add_artist(legend0)
 
     #########################
     ax = plt.subplot(1, 2, 2)
-    plt.grid(linestyle='-', linewidth=0.3)
+    plt.grid(linestyle='-', linewidth=0.15)
 
-    plot_Pristine_scatter()
-    plot_MW_scatter()
-    plot_APOGEE_scatter()
-    for i in range(config_parameters.number_of_inputs):
+    # plot_MW_joint_datasets()
+    plot_Pristine_avg()
+    plot_Venn2004_avg()
+    plot_Yong2013_avg()
+    plot_Venn2020_avg()
+
+    for i in range(4):
 
         sim_info = read_simulation(config_parameters, i)
         Fe_H, Mg_Fe = read_MW_abundances(sim_info, ("Fe_H", "Mg_Fe"))
-        plot_scatter(Fe_H, Mg_Fe, color_list[i], sim_info.simulation_name,'-')
+        # part_mass = 1e6 * np.ones(len(Fe_H))
+        # plot_scatter(Fe_H, Mg_Fe, part_mass, color_list[i], sim_info.simulation_name,'-')
+        # plot_cumulative_function(Fe_H, Mg_Fe, color_list[i], sim_info.simulation_name,'-')
+        plot_mean(Fe_H, Mg_Fe, color_list[i], sim_info.simulation_name,'-')
+        # print(sim_info.simulation_name)
+        # num = np.where(Fe_H<-4)[0]
+        # print(len(num)/len(Fe_H))
+        # num = np.where((Mg_Fe < 0) & (Fe_H<-1))[0]
+        # num2 = np.where(Fe_H < -1)[0]
+        # print(len(num) / len(num2))
+
+    for i in range(4,config_parameters.number_of_inputs):
+        sim_info = read_simulation(config_parameters, i)
+        Fe_H, Mg_Fe = read_MW_abundances(sim_info, ("Fe_H", "Mg_Fe"))
+        # part_mass = 1e6 * np.ones(len(Fe_H))
+        # plot_scatter(Fe_H, Mg_Fe, part_mass, color_list[i-4], sim_info.simulation_name, '--')
+        # plot_cumulative_function(Fe_H, Mg_Fe, color_list[i-4], sim_info.simulation_name, '--')
+        plot_mean(Fe_H, Mg_Fe, color_list[i-4], sim_info.simulation_name, '--')
+
 
         # sim_info = read_simulation(config_parameters, i)
         # Fe_H, Mg_Fe, sig_Fe, sig_Mg = read_MW_scatter_in_abundances(sim_info,("Fe_H","Mg_Fe"))
@@ -597,21 +641,31 @@ def plot_scatter_of_MW(config_parameters):
     # plot_MW_scatter("Mg",True)
     # plot_MW_scatter("O",False)
 
-    plt.axis([-4, 1, 0, 1])
+    plt.axis([-4, 1, -0.2, 0.7])
     xticks = np.array([-4, -3, -2, -1, 0, 1])
     labels = ["$-4$", "$-3$", "$-2$", "$-1$", "$0$", "$1$"]
     plt.xticks(xticks, labels)
     plt.xlabel("[Fe/H]")
-    plt.ylabel("Scatter [Mg/Fe] (84th-16th)")
+    # plt.ylabel("Fraction of stars with [Mg/Fe]$<0.4$")
+    plt.ylabel(r"$\langle [$Mg/Fe$]\rangle$")
+    # plt.yscale('log')
     ax.tick_params(direction='in', axis='both', which='both', pad=4.5)
 
-    lines = ax.get_lines()
-    legend1 = plt.legend([lines[i] for i in [2]],
-                         ["APOGEE survey"],
-                         loc=[-0.15, 1.01],
-                         labelspacing=0.05, handlelength=0.5, handletextpad=0.3,
-                         frameon=False, fontsize=9, ncol=4, columnspacing=1.2)
-    ax.add_artist(legend1)
+    # lines = ax.get_lines()
+    # legend1 = plt.legend([lines[i] for i in [2]],
+    #                      ["APOGEE survey"],
+    #                      loc=[-0.47, 1.0],
+    #                      labelspacing=0.02, handlelength=0.5, handletextpad=0.2,
+    #                      frameon=False, fontsize=9, ncol=4, columnspacing=0.8)
+    # ax.add_artist(legend1)
+
+    # lines = ax.get_lines()
+    # legend1 = plt.legend([lines[i] for i in [2, 3, 4]],
+    #                      ["APOGEE survey", "OCCAM survey", "MW-GCs"],
+    #                      loc=[-0.47, 1.0],
+    #                      labelspacing=0.02, handlelength=0.5, handletextpad=0.2,
+    #                      frameon=False, fontsize=9, ncol=4, columnspacing=0.8)
+    # ax.add_artist(legend1)
 
 
-    plt.savefig(config_parameters.output_directory + "Scatter_MW.png", dpi=300)
+    plt.savefig(config_parameters.output_directory + "MW_mean_relation_MgFe.png", dpi=300)
